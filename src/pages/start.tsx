@@ -2,10 +2,17 @@ import React from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
-const StartPage: React.FC = () => {
+interface StartPageProps {
+  onNavigate: (page: 'start' | 'login' | 'register' | 'dashboard') => void;
+}
+
+const StartPage: React.FC<StartPageProps> = ({ onNavigate }) => {
   const handleGetStarted = () => {
-    // Navigation zur Login-Seite
-    console.log('Navigating to login page');
+    onNavigate('register');
+  };
+
+  const handleLogin = () => {
+    onNavigate('login');
   };
 
   return (
@@ -69,7 +76,7 @@ const StartPage: React.FC = () => {
               Jetzt starten
             </button>
             <button
-              onClick={handleGetStarted}
+              onClick={handleLogin}
               className="w-full bg-transparent border-2 border-white text-white font-semibold py-4 px-6 rounded-lg hover:bg-white/10 transition-colors"
             >
               Bereits registriert? Anmelden

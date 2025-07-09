@@ -241,7 +241,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onLogout, user }) => {
       <Footer />
 
       {/* Modals */}
-      {showForm && user && (
+      {showForm && (
         <StreakForm
           onSubmit={handleAddStreak}
           onCancel={() => setShowForm(false)}

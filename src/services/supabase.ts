@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import type { Session } from '@supabase/supabase-js';
 
 // Supabase-Konfiguration
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
@@ -11,10 +12,29 @@ if (!supabaseUrl || !supabaseAnonKey) {
 // Supabase-Client erstellen
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+// Basic Types
+interface Exercise {
+  id: string;
+  user_id: string;
+  name: string;
+  category: string;
+  sets?: number;
+  reps?: number;
+  weight?: number;
+  duration?: number;
+  last_performed?: Date;
+}
+
+interface UserMetadata {
+  firstName?: string;
+  lastName?: string;
+  [key: string]: unknown;
+}
+
 // Auth-Helper-Funktionen
 export const authService = {
   // Benutzer registrieren
-  async signUp(email: string, password: string, userData?: any) {
+  async signUp(email: string, password: string, userData?: UserMetadata) {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -51,7 +71,7 @@ export const authService = {
   },
 
   // Auth-Status-Änderungen überwachen
-  onAuthStateChange(callback: (event: string, session: any) => void) {
+  onAuthStateChange(callback: (event: string, session: Session | null) => void) {
     return supabase.auth.onAuthStateChange(callback);
   },
 
@@ -76,7 +96,7 @@ export const exerciseService = {
   },
 
   // Neue Übung erstellen
-  async createExercise(exerciseData: any) {
+  async createExercise(exerciseData: Partial<Exercise>) {
     const { data, error } = await supabase
       .from('exercises')
       .insert([exerciseData])
@@ -86,7 +106,7 @@ export const exerciseService = {
   },
 
   // Übung aktualisieren
-  async updateExercise(id: string, updates: any) {
+  async updateExercise(id: string, updates: Partial<Exercise>) {
     const { data, error } = await supabase
       .from('exercises')
       .update(updates)
@@ -127,7 +147,7 @@ export const workoutService = {
   },
 
   // Neue Trainingseinheit erstellen
-  async createWorkout(workoutData: any) {
+  async createWorkout(workoutData: Record<string, unknown>) {
     const { data, error } = await supabase
       .from('workouts')
       .insert([workoutData])
@@ -154,7 +174,7 @@ export const workoutService = {
 // Real-time Subscriptions
 export const subscriptions = {
   // Übungen-Updates überwachen
-  subscribeToExerciseChanges(userId: string, callback: (payload: any) => void) {
+  subscribeToExerciseChanges(userId: string, callback: (payload: unknown) => void) {
     return supabase
       .channel('exercises')
       .on(
@@ -171,7 +191,7 @@ export const subscriptions = {
   },
 
   // Trainingseinheiten-Updates überwachen
-  subscribeToWorkoutChanges(userId: string, callback: (payload: any) => void) {
+  subscribeToWorkoutChanges(userId: string, callback: (payload: unknown) => void) {
     return supabase
       .channel('workouts')
       .on(
@@ -191,7 +211,7 @@ export const subscriptions = {
 // Utility-Funktionen
 export const utils = {
   // Fehler formatieren
-  formatSupabaseError(error: any): string {
+  formatSupabaseError(error: { message?: string } | null): string {
     if (!error) return '';
     
     // Deutsche Übersetzungen für häufige Supabase-Fehler
@@ -204,18 +224,23 @@ export const utils = {
       'Network error': 'Netzwerkfehler. Bitte versuchen Sie es erneut.'
     };
 
-    return errorMessages[error.message] || error.message || 'Ein unbekannter Fehler ist aufgetreten';
+    return errorMessages[error.message || ''] || error.message || 'Ein unbekannter Fehler ist aufgetreten';
   },
 
   // Benutzer-Profil formatieren
-  formatUserProfile(user: any) {
+  formatUserProfile(user: { 
+    id: string; 
+    email?: string; 
+    user_metadata?: UserMetadata; 
+    created_at?: string;
+  }) {
     return {
       id: user.id,
-      email: user.email,
+      email: user.email || '',
       firstName: user.user_metadata?.firstName || '',
       lastName: user.user_metadata?.lastName || '',
       fullName: `${user.user_metadata?.firstName || ''} ${user.user_metadata?.lastName || ''}`.trim(),
-      createdAt: user.created_at
+      createdAt: user.created_at || ''
     };
   }
 };

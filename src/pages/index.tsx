@@ -2,7 +2,12 @@ import React, { useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
-const LoginPage: React.FC = () => {
+interface LoginPageProps {
+  onNavigate: (page: 'start' | 'login' | 'register' | 'dashboard') => void;
+  onLogin: (email: string, password: string) => void;
+}
+
+const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -13,11 +18,11 @@ const LoginPage: React.FC = () => {
     setIsLoading(true);
     
     try {
-      // Hier würde die Supabase-Authentifizierung erfolgen
-      console.log('Login attempt:', { email, password });
-      
       // Simulation einer API-Anfrage
       await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Rufe die onLogin-Funktion aus App.tsx auf
+      onLogin(email, password);
       
     } catch (error) {
       console.error('Login error:', error);
@@ -28,15 +33,20 @@ const LoginPage: React.FC = () => {
 
   const handleForgotPassword = () => {
     console.log('Forgot password for:', email);
+    // Hier könnte später die Passwort-Reset-Funktionalität implementiert werden
   };
 
   const handleGoToRegister = () => {
-    console.log('Navigate to register');
+    onNavigate('register');
+  };
+
+  const handleBack = () => {
+    onNavigate('start');
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Header title="Anmelden" />
+      <Header title="Anmelden" showBackButton onBackClick={handleBack} />
       
       <main className="flex-1 flex flex-col justify-center">
         <div className="mobile-container">

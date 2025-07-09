@@ -2,7 +2,12 @@ import React, { useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
-const RegisterPage: React.FC = () => {
+interface RegisterPageProps {
+  onNavigate: (page: 'start' | 'login' | 'register' | 'dashboard') => void;
+  onRegister: (userData: any) => void;
+}
+
+const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onRegister }) => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -39,11 +44,11 @@ const RegisterPage: React.FC = () => {
     setIsLoading(true);
     
     try {
-      // Hier würde die Supabase-Registrierung erfolgen
-      console.log('Register attempt:', formData);
-      
       // Simulation einer API-Anfrage
       await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Rufe die onRegister-Funktion aus App.tsx auf
+      onRegister(formData);
       
     } catch (error) {
       console.error('Registration error:', error);
@@ -53,11 +58,11 @@ const RegisterPage: React.FC = () => {
   };
 
   const handleGoToLogin = () => {
-    console.log('Navigate to login');
+    onNavigate('login');
   };
 
   const handleBack = () => {
-    console.log('Navigate back');
+    onNavigate('start');
   };
 
   return (
