@@ -20,7 +20,7 @@ const StreakDisplay: React.FC<StreakDisplayProps> = ({ currentStreak, isLoading 
             <>
               <div className="text-3xl font-bold">{currentStreak}</div>
               <div className="text-sm opacity-90">
-                {currentStreak === 1 ? 'Tag' : 'Tage'} Streak
+                {currentStreak === 1 ? 'Day' : 'Days'} Streak
               </div>
             </>
           )}
@@ -29,10 +29,10 @@ const StreakDisplay: React.FC<StreakDisplayProps> = ({ currentStreak, isLoading 
       
       {!isLoading && (
         <div className="mt-4 text-center text-sm opacity-90">
-          {currentStreak === 0 && "Starte heute deine Streak! 💪"}
-          {currentStreak > 0 && currentStreak < 7 && "Du bist auf dem richtigen Weg! 🚀"}
-          {currentStreak >= 7 && currentStreak < 30 && "Fantastisch! Weiter so! ⭐"}
-          {currentStreak >= 30 && "Du bist eine Legende! 👑"}
+          {currentStreak === 0 && "Start your streak today! 💪"}
+          {currentStreak > 0 && currentStreak < 7 && "You're on the right track! 🚀"}
+          {currentStreak >= 7 && currentStreak < 30 && "Fantastic! Keep it up! ⭐"}
+          {currentStreak >= 30 && "You're a legend! 👑"}
         </div>
       )}
     </div>

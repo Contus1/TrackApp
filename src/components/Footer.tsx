@@ -6,28 +6,9 @@ const Footer: React.FC = () => {
       <div className="mobile-container">
         <div className="py-4">
           <p className="text-center text-sm text-gray-600">
-            © 2025 TrackApp. Bleiben Sie fit!
+            © 2025 TrackApp. Made with love in Madrid by Carl Lichtl!
           </p>
-          <div className="flex justify-center space-x-6 mt-2">
-            <a 
-              href="#" 
-              className="text-xs text-gray-500 hover:text-primary-600 transition-colors"
-            >
-              Datenschutz
-            </a>
-            <a 
-              href="#" 
-              className="text-xs text-gray-500 hover:text-primary-600 transition-colors"
-            >
-              AGB
-            </a>
-            <a 
-              href="#" 
-              className="text-xs text-gray-500 hover:text-primary-600 transition-colors"
-            >
-              Hilfe
-            </a>
-          </div>
+          
         </div>
       </div>
     </footer>

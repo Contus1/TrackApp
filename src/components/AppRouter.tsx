@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../services/supabase';
-import { friendsService } from '../services/friendsService';
 import type { User } from '@supabase/supabase-js';
+import LandingPage from '../pages/landing';
 import DashboardPage from '../pages/dashboard';
 import AuthPage from '../pages/auth';
-import InviteHandler from '../components/InviteHandler';
+import SimpleInviteAcceptor from '../components/SimpleInviteAcceptor';
 
 // Simple Router für die TrackApp
 const AppRouter: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showAuth, setShowAuth] = useState(false);
   const [currentRoute, setCurrentRoute] = useState<{
     path: string;
     params?: Record<string, string>;
@@ -61,32 +62,13 @@ const AppRouter: React.FC = () => {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      (_event, session) => {
         setUser(session?.user ?? null);
-        
-        // Handle post-login invite acceptance
-        if (event === 'SIGNED_IN' && currentRoute.path === '/invite' && currentRoute.params?.token) {
-          handleAutoAcceptInvite(session?.user || null, currentRoute.params.token);
-        }
       }
     );
 
     return () => subscription.unsubscribe();
   }, [currentRoute]);
-
-  // Auto-accept invite after login
-  const handleAutoAcceptInvite = async (user: User | null, token: string) => {
-    if (!user || !token) return;
-    
-    try {
-      await friendsService.acceptInviteByToken(token, user.id);
-      // Redirect to dashboard
-      window.history.pushState({}, '', '/');
-      setCurrentRoute({ path: '/' });
-    } catch (error) {
-      console.error('Auto-accept invite failed:', error);
-    }
-  };
 
   // Navigation helpers
   const navigate = (path: string) => {
@@ -96,6 +78,12 @@ const AppRouter: React.FC = () => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    setShowAuth(false);
+    navigate('/');
+  };
+
+  const handleLogin = () => {
+    setShowAuth(false);
     navigate('/');
   };
 
@@ -114,21 +102,17 @@ const AppRouter: React.FC = () => {
   switch (currentRoute.path) {
     case '/invite':
       return (
-        <InviteHandler
+        <SimpleInviteAcceptor
           token={currentRoute.params?.token || ''}
           user={user}
-          onAccepted={() => navigate('/')}
-          onError={(message) => {
-            alert(message);
-            navigate('/');
-          }}
+          onCompleted={() => navigate('/')}
         />
       );
 
     case '/friends':
     case '/friend':
       if (!user) {
-        return <AuthPage onLogin={() => navigate('/')} />;
+        return <AuthPage onLogin={handleLogin} onBack={() => setShowAuth(false)} />;
       }
       return (
         <DashboardPage
@@ -139,7 +123,11 @@ const AppRouter: React.FC = () => {
 
     default:
       if (!user) {
-        return <AuthPage onLogin={() => navigate('/')} />;
+        if (showAuth) {
+          return <AuthPage onLogin={handleLogin} onBack={() => setShowAuth(false)} />;
+        } else {
+          return <LandingPage onGetStarted={() => setShowAuth(true)} />;
+        }
       }
       return (
         <DashboardPage

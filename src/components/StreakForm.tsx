@@ -20,13 +20,13 @@ const StreakForm: React.FC<StreakFormProps> = ({ onSubmit, onCancel, userId, isL
     e.preventDefault();
     
     if (!formData.sport || !formData.mood) {
-      alert('Bitte alle Pflichtfelder ausfüllen!');
+      alert('Please fill in all required fields!');
       return;
     }
 
     const streakData: StreakInsert = {
       user_id: userId,
-      date: new Date().toISOString().split('T')[0], // Heute
+      date: new Date().toISOString().split('T')[0], // Today
       sport: formData.sport,
       category: formData.sport === 'gym' ? formData.category : undefined,
       mood: formData.mood
@@ -47,7 +47,7 @@ const StreakForm: React.FC<StreakFormProps> = ({ onSubmit, onCancel, userId, isL
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold text-gray-900">Training hinzufügen</h2>
+          <h2 className="text-xl font-bold text-gray-900">Add Workout</h2>
           <button
             onClick={onCancel}
             className="text-gray-400 hover:text-gray-600 text-2xl"
@@ -58,10 +58,10 @@ const StreakForm: React.FC<StreakFormProps> = ({ onSubmit, onCancel, userId, isL
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Sport Auswahl */}
+          {/* Sport Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Sportart *
+              Sport Type *
             </label>
             <select
               value={formData.sport}
@@ -70,7 +70,7 @@ const StreakForm: React.FC<StreakFormProps> = ({ onSubmit, onCancel, userId, isL
               disabled={isLoading}
               required
             >
-              <option value="">Sportart wählen...</option>
+              <option value="">Choose sport...</option>
               {SPORT_OPTIONS.map(option => (
                 <option key={option.value} value={option.value}>
                   {option.label}
@@ -79,11 +79,11 @@ const StreakForm: React.FC<StreakFormProps> = ({ onSubmit, onCancel, userId, isL
             </select>
           </div>
 
-          {/* Gym Kategorie (nur wenn Gym gewählt) */}
+          {/* Gym Category (only if Gym selected) */}
           {formData.sport === 'gym' && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Körperbereich
+                Body Area
               </label>
               <select
                 value={formData.category || ''}
@@ -91,7 +91,7 @@ const StreakForm: React.FC<StreakFormProps> = ({ onSubmit, onCancel, userId, isL
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 disabled={isLoading}
               >
-                <option value="">Körperbereich wählen...</option>
+                <option value="">Choose body area...</option>
                 {GYM_CATEGORIES.map(option => (
                   <option key={option.value} value={option.value}>
                     {option.label}
@@ -101,10 +101,10 @@ const StreakForm: React.FC<StreakFormProps> = ({ onSubmit, onCancel, userId, isL
             </div>
           )}
 
-          {/* Mood Auswahl */}
+          {/* Mood Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Wie fühlst du dich? *
+              How are you feeling? *
             </label>
             <div className="grid grid-cols-3 gap-3">
               {MOOD_OPTIONS.map(option => (
@@ -131,17 +131,24 @@ const StreakForm: React.FC<StreakFormProps> = ({ onSubmit, onCancel, userId, isL
             <button
               type="button"
               onClick={onCancel}
-              className="flex-1 px-4 py-3 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              className="flex-1 px-4 py-3 text-gray-700 bg-gray-100 rounded-2xl hover:bg-gray-200 transition-colors font-medium"
               disabled={isLoading}
             >
-              Abbrechen
+              Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-3 bg-gradient-to-r from-orange-500 via-red-500 to-orange-600 text-white rounded-2xl font-semibold hover:shadow-lg transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
               disabled={isLoading || !formData.sport || !formData.mood}
             >
-              {isLoading ? 'Speichere...' : 'Speichern'}
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Saving...
+                </div>
+              ) : (
+                'Save'
+              )}
             </button>
           </div>
         </form>

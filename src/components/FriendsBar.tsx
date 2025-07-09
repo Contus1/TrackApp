@@ -42,25 +42,25 @@ const FriendsBar: React.FC<FriendsBarProps> = ({
     <div className="bg-white rounded-xl p-4 shadow-sm">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold text-gray-900">
-          Freunde {friends.length > 0 && `(${friends.length})`}
+          Friends {friends.length > 0 && `(${friends.length})`}
         </h3>
         <button
           onClick={onInviteFriend}
-          className="px-3 py-1 text-sm bg-primary-100 text-primary-700 rounded-full hover:bg-primary-200 transition-colors"
+          className="px-4 py-2 text-sm bg-gradient-to-r from-orange-100 to-red-100 text-orange-700 rounded-full hover:from-orange-200 hover:to-red-200 transition-all duration-200 font-medium"
         >
-          Einladen
+          Invite
         </button>
       </div>
 
       {friends.length === 0 ? (
         <div className="text-center py-8 text-gray-500">
           <div className="text-3xl mb-2">👥</div>
-          <p className="text-sm">Noch keine Freunde hinzugefügt</p>
+          <p className="text-sm">No friends added yet</p>
           <button 
             onClick={onInviteFriend}
-            className="mt-2 text-primary-600 text-sm hover:text-primary-700"
+            className="mt-3 text-orange-600 text-sm hover:text-orange-700 font-medium"
           >
-            Freunde einladen
+            Invite friends
           </button>
         </div>
       ) : (
@@ -79,7 +79,7 @@ const FriendsBar: React.FC<FriendsBarProps> = ({
                     className="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
                   />
                 ) : (
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-semibold text-lg">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-red-600 flex items-center justify-center text-white font-semibold text-lg">
                     {(friend.display_name || friend.email)[0].toUpperCase()}
                   </div>
                 )}
@@ -111,7 +111,7 @@ const FriendsBar: React.FC<FriendsBarProps> = ({
                 +{remainingCount}
               </div>
               <div className="mt-2 text-xs text-gray-500">
-                weitere
+                more
               </div>
             </div>
           )}

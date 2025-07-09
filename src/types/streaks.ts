@@ -1,12 +1,12 @@
-// TypeScript-Interfaces für die Streak-basierte Fitness-App
+// TypeScript interfaces for the streak-based fitness app
 
 export interface Streak {
   id: string;
   user_id: string;
-  date: string; // YYYY-MM-DD Format
-  sport: 'gym' | 'laufen' | 'yoga' | 'schwimmen' | 'radfahren' | 'other';
-  category?: 'brust' | 'beine' | 'rücken' | 'arme' | 'schultern' | 'core' | 'ganzkörper';
-  mood: 'gut' | 'mittel' | 'schlecht';
+  date: string; // YYYY-MM-DD format
+  sport: 'gym' | 'running' | 'yoga' | 'swimming' | 'cycling' | 'other';
+  category?: 'chest' | 'legs' | 'back' | 'arms' | 'shoulders' | 'core' | 'fullbody';
+  mood: 'good' | 'okay' | 'bad';
   created_at: string;
   updated_at: string;
 }
@@ -38,30 +38,30 @@ export interface FriendWithStreak extends UserProfile {
   friendship_status: 'accepted' | 'pending';
 }
 
-// Dropdown-Optionen
+// Dropdown Options
 export const SPORT_OPTIONS = [
   { value: 'gym', label: 'Gym' },
-  { value: 'laufen', label: 'Laufen' },
+  { value: 'running', label: 'Running' },
   { value: 'yoga', label: 'Yoga' },
-  { value: 'schwimmen', label: 'Schwimmen' },
-  { value: 'radfahren', label: 'Radfahren' },
-  { value: 'other', label: 'Andere' }
+  { value: 'swimming', label: 'Swimming' },
+  { value: 'cycling', label: 'Cycling' },
+  { value: 'other', label: 'Other' }
 ] as const;
 
 export const GYM_CATEGORIES = [
-  { value: 'brust', label: 'Brust' },
-  { value: 'beine', label: 'Beine' },
-  { value: 'rücken', label: 'Rücken' },
-  { value: 'arme', label: 'Arme' },
-  { value: 'schultern', label: 'Schultern' },
+  { value: 'chest', label: 'Chest' },
+  { value: 'legs', label: 'Legs' },
+  { value: 'back', label: 'Back' },
+  { value: 'arms', label: 'Arms' },
+  { value: 'shoulders', label: 'Shoulders' },
   { value: 'core', label: 'Core' },
-  { value: 'ganzkörper', label: 'Ganzkörper' }
+  { value: 'fullbody', label: 'Full Body' }
 ] as const;
 
 export const MOOD_OPTIONS = [
-  { value: 'gut', label: 'Gut 😊', emoji: '😊' },
-  { value: 'mittel', label: 'Mittel 😐', emoji: '😐' },
-  { value: 'schlecht', label: 'Schlecht 😞', emoji: '😞' }
+  { value: 'good', label: 'Good 😊', emoji: '😊' },
+  { value: 'okay', label: 'Okay 😐', emoji: '😐' },
+  { value: 'bad', label: 'Bad 😞', emoji: '😞' }
 ] as const;
 
 // Insert/Update Typen

@@ -7,7 +7,7 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ 
-  title = "TrackApp", 
+  title = "Meine Fitness Streaks", 
   showBackButton = false, 
   onBackClick 
 }) => {
