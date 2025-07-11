@@ -26,6 +26,31 @@ const mimeTypes = {
 const server = createServer((req, res) => {
   console.log(`Request: ${req.method} ${req.url}`);
   
+  // Special handling for SPA routes (like /invite/...)
+  const isAPIRoute = req.url.startsWith('/api/');
+  const isAssetRequest = req.url.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|json|woff|woff2|ttf|eot)$/);
+  const isSPARoute = req.url.startsWith('/invite/') || req.url.startsWith('/friend/') || req.url === '/friends' || req.url === '/dashboard' || req.url === '/auth';
+  
+  // If it's a SPA route, always serve index.html
+  if (isSPARoute) {
+    console.log(`SPA route detected: ${req.url}, serving index.html`);
+    const filePath = join(distDir, 'index.html');
+    try {
+      const content = readFileSync(filePath);
+      res.writeHead(200, { 
+        'Content-Type': 'text/html',
+        'Cache-Control': 'no-cache'
+      });
+      res.end(content);
+      return;
+    } catch (error) {
+      console.error(`Error serving index.html: ${error.message}`);
+      res.writeHead(500, { 'Content-Type': 'text/plain' });
+      res.end('Internal Server Error');
+      return;
+    }
+  }
+  
   let filePath = join(distDir, req.url === '/' ? 'index.html' : req.url);
   
   // Clean the file path to prevent directory traversal
@@ -35,9 +60,6 @@ const server = createServer((req, res) => {
   if (existsSync(normalizedPath)) {
     filePath = normalizedPath;
   } else {
-    // Only serve index.html for routes that look like pages, not assets
-    const isAssetRequest = req.url.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|json|woff|woff2|ttf|eot)$/);
-    
     if (isAssetRequest) {
       // Asset not found - return 404
       console.log(`Asset not found: ${normalizedPath}`);
