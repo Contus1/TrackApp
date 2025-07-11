@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Environment Variables Test</title>
+    <script type="module">
+        // Test if environment variables are available in the built app
+        console.log('Testing environment variables...');
+        
+        // These should be available if Vite built them in correctly
+        const envTest = {
+            VITE_SUPABASE_URL: import.meta.env?.VITE_SUPABASE_URL,
+            VITE_SUPABASE_ANON_KEY: import.meta.env?.VITE_SUPABASE_ANON_KEY,
+            MODE: import.meta.env?.MODE,
+            DEV: import.meta.env?.DEV,
+            PROD: import.meta.env?.PROD
+        };
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const debugDiv = document.getElementById('env-debug');
+            debugDiv.innerHTML = `
+                <h2>Environment Variables Status:</h2>
+                <p><strong>VITE_SUPABASE_URL:</strong> ${envTest.VITE_SUPABASE_URL ? '✅ Found' : '❌ Missing'}</p>
+                <p><strong>Value:</strong> ${envTest.VITE_SUPABASE_URL || 'undefined'}</p>
+                <br>
+                <p><strong>VITE_SUPABASE_ANON_KEY:</strong> ${envTest.VITE_SUPABASE_ANON_KEY ? '✅ Found' : '❌ Missing'}</p>
+                <p><strong>Value:</strong> ${envTest.VITE_SUPABASE_ANON_KEY ? envTest.VITE_SUPABASE_ANON_KEY.substring(0, 20) + '...' : 'undefined'}</p>
+                <br>
+                <p><strong>Build Mode:</strong> ${envTest.MODE}</p>
+                <p><strong>Is Production:</strong> ${envTest.PROD}</p>
+                <br>
+                <h3>All import.meta.env:</h3>
+                <pre style="background: #f5f5f5; padding: 10px; border-radius: 5px; overflow-x: auto;">
+${JSON.stringify(import.meta.env, null, 2)}
+                </pre>
+            `;
+        });
+    </script>
+</head>
+<body>
+    <h1>Environment Variables Test</h1>
+    <div id="env-debug">Loading...</div>
+    <br>
+    <a href="/" style="color: blue;">← Back to App</a>
+</body>
+</html>
