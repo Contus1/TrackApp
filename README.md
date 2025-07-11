@@ -212,3 +212,4 @@ The app builds to static files that can be served from any web server or CDN.
 
 *A project by Carl Lichtl*
 
+# Force redeploy with env vars Fri Jul 11 20:50:56 CEST 2025
