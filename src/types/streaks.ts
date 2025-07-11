@@ -1,39 +1,23 @@
 // TypeScript interfaces for the streak-based fitness app
+// Updated to use database.ts types for consistency
 
-export interface Streak {
-  id: string;
-  user_id: string;
-  date: string; // YYYY-MM-DD format
-  sport: 'gym' | 'running' | 'yoga' | 'swimming' | 'cycling' | 'other';
-  category?: 'chest' | 'legs' | 'back' | 'arms' | 'shoulders' | 'core' | 'fullbody';
-  mood: 'gut' | 'mittel' | 'schlecht';
-  created_at: string;
-  updated_at: string;
-}
+import type { 
+  Streak as DbStreak, 
+  Friend as DbFriend, 
+  Profile as DbProfile, 
+  UserStreak as DbUserStreak 
+} from './database';
 
-export interface Friendship {
-  id: string;
-  user_id: string;
-  friend_id: string;
-  status: 'pending' | 'accepted' | 'blocked';
-  created_at: string;
-}
+// Re-export main types for convenience
+export type Streak = DbStreak;
+export type Profile = DbProfile;
+export type UserStreak = DbUserStreak;
 
-export interface UserProfile {
-  id: string;
-  email: string;
-  display_name?: string;
-  avatar_url?: string;
-  created_at: string;
-}
+// Legacy types for backward compatibility
+export type Friendship = DbFriend;
+export type UserProfile = DbProfile;
 
-export interface UserStreak {
-  user_id: string;
-  current_streak: number;
-  last_activity_date?: string;
-}
-
-export interface FriendWithStreak extends UserProfile {
+export interface FriendWithStreak extends DbProfile {
   current_streak: number;
   friendship_status: 'accepted' | 'pending';
 }
@@ -64,14 +48,14 @@ export const MOOD_OPTIONS = [
   { value: 'schlecht', label: 'Schlecht 😞', emoji: '😞' }
 ] as const;
 
-// Insert/Update Typen
-export type StreakInsert = Omit<Streak, 'id' | 'created_at' | 'updated_at'>;
-export type StreakUpdate = Partial<Omit<Streak, 'id' | 'user_id' | 'created_at' | 'updated_at'>>;
+// Insert/Update types (using database types)
+export type StreakInsert = Omit<DbStreak, 'id' | 'created_at' | 'updated_at'>;
+export type StreakUpdate = Partial<Omit<DbStreak, 'id' | 'user_id' | 'created_at' | 'updated_at'>>;
 
-export type FriendshipInsert = Omit<Friendship, 'id' | 'created_at'>;
-export type FriendshipUpdate = Partial<Omit<Friendship, 'id' | 'user_id' | 'friend_id' | 'created_at'>>;
+export type FriendshipInsert = Omit<DbFriend, 'id' | 'created_at'>;
+export type FriendshipUpdate = Partial<Omit<DbFriend, 'id' | 'user_id' | 'friend_id' | 'created_at'>>;
 
-// API Response Typen
+// API Response types
 export interface StreakStats {
   current_streak: number;
   longest_streak: number;
@@ -93,7 +77,8 @@ export interface ComparisonData {
   }>;
 }
 
-// Erweiterte Friends-Interfaces mit Deep Link Support
+// Extended Friends interfaces with Deep Link Support
+// Note: These may need to be updated to match actual schema
 export interface Friend {
   id: string;
   inviter_id: string;

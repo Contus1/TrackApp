@@ -66,7 +66,7 @@ const FriendsSection: React.FC<FriendsSectionProps> = ({ user, onNavigateToFrien
       
       if (error) {
         console.error('Invite error:', error);
-        const errorMessage = error instanceof Error ? error.message : 'Fehler beim Erstellen der Einladung';
+        const errorMessage = typeof error === 'string' ? error : 'Fehler beim Erstellen der Einladung';
         alert(errorMessage);
       } else if (data) {
         console.log('✅ Invite created successfully:', data);

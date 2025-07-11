@@ -13,27 +13,40 @@ const distDir = join(__dirname, 'dist');
 // MIME types
 const mimeTypes = {
   '.html': 'text/html',
-  '.js': 'text/javascript',
+  '.js': 'application/javascript',
+  '.mjs': 'application/javascript',
+  '.ts': 'application/javascript',
   '.css': 'text/css',
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
   '.gif': 'image/gif',
   '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon',
-  '.json': 'application/json'
+  '.json': 'application/json',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2',
+  '.ttf': 'font/ttf',
+  '.eot': 'application/vnd.ms-fontobject',
+  '.map': 'application/json'
 };
 
 const server = createServer((req, res) => {
   console.log(`Request: ${req.method} ${req.url}`);
   
-  // Special handling for SPA routes (like /invite/...)
-  const isAPIRoute = req.url.startsWith('/api/');
-  const isAssetRequest = req.url.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|json|woff|woff2|ttf|eot)$/);
-  const isSPARoute = req.url.startsWith('/invite/') || req.url.startsWith('/friend/') || req.url === '/friends' || req.url === '/dashboard' || req.url === '/auth';
+  // Parse URL to remove query parameters
+  const urlPath = req.url.split('?')[0];
   
-  // If it's a SPA route, always serve index.html
-  if (isSPARoute) {
-    console.log(`SPA route detected: ${req.url}, serving index.html`);
+  // Special handling for SPA routes (like /invite/...)
+  const isAPIRoute = urlPath.startsWith('/api/');
+  const isAssetRequest = urlPath.match(/\.(js|mjs|ts|css|png|jpg|jpeg|gif|svg|ico|json|woff|woff2|ttf|eot|map)$/);
+  const isSPARoute = urlPath.startsWith('/invite/') || urlPath.startsWith('/friend/') || urlPath === '/friends' || urlPath === '/dashboard' || urlPath === '/auth';
+  
+  console.log(`Processing: ${urlPath}, isAsset: ${isAssetRequest}, isSPARoute: ${isSPARoute}`);
+  
+  // If it's a SPA route and NOT an asset, serve index.html
+  if (isSPARoute && !isAssetRequest) {
+    console.log(`SPA route detected: ${urlPath}, serving index.html`);
     const filePath = join(distDir, 'index.html');
     try {
       const content = readFileSync(filePath);
@@ -51,7 +64,7 @@ const server = createServer((req, res) => {
     }
   }
   
-  let filePath = join(distDir, req.url === '/' ? 'index.html' : req.url);
+  let filePath = join(distDir, urlPath === '/' ? 'index.html' : urlPath);
   
   // Clean the file path to prevent directory traversal
   const normalizedPath = filePath.replace(/\.\./g, '');
