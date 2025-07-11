@@ -127,6 +127,53 @@ The app requires several SQL files to be run in your Supabase SQL editor:
 - Web Push API for notifications
 - Service Worker for push notification handling
 
+## Deployment
+
+### DigitalOcean App Platform
+
+The app is configured for easy deployment on DigitalOcean App Platform:
+
+1. **Push your code** to a GitHub repository
+2. **Create a new App** on DigitalOcean App Platform
+3. **Connect your GitHub repo** and select the main branch
+4. **DigitalOcean will automatically detect** the Node.js environment
+5. **The app will build and deploy** using the provided configuration
+
+#### Configuration Files:
+- `Procfile` - Tells DigitalOcean how to start the app
+- `.do/app.yaml` - DigitalOcean App Platform configuration
+- `serve.json` - Static file serving configuration with SPA routing
+- `package.json` - Includes `start` script for production
+
+#### Environment Variables:
+Set these in your DigitalOcean App Platform environment:
+- `VITE_SUPABASE_URL` - Your Supabase project URL
+- `VITE_SUPABASE_ANON_KEY` - Your Supabase anon/public key
+- `VITE_VAPID_PUBLIC_KEY` - Your VAPID public key for push notifications
+
+#### Build Process:
+1. Node.js environment is set up
+2. Dependencies are installed (`npm install`)
+3. App is built for production (`npm run build`)
+4. Static files are served using `serve` package on port 8080
+
+### Other Deployment Options
+
+**Netlify:**
+```bash
+npm run build
+# Deploy the `dist` folder
+```
+
+**Vercel:**
+```bash
+npm run build  
+# Deploy the `dist` folder
+```
+
+**Static Hosting:**
+The app builds to static files that can be served from any web server or CDN.
+
 ## Files Overview
 
 ### Core Components

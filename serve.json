@@ -1,0 +1,29 @@
+{
+  "public": "dist",
+  "rewrites": [
+    {
+      "source": "**",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "**/*.@(js|css)",
+      "headers": [
+        {
+          "key": "cache-control",
+          "value": "max-age=31536000"
+        }
+      ]
+    },
+    {
+      "source": "**/*.@(jpg|jpeg|png|gif|ico|svg)",
+      "headers": [
+        {
+          "key": "cache-control", 
+          "value": "max-age=31536000"
+        }
+      ]
+    }
+  ]
+}
