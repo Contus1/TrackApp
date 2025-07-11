@@ -20,3 +20,7 @@ services:
     value: production
   - key: PORT
     value: "8080"
+  # WICHTIG: Diese Werte müssen in der DigitalOcean UI gesetzt werden!
+  # Gehe zu Settings → Environment Variables und füge hinzu:
+  # VITE_SUPABASE_URL=https://dein-projekt-id.supabase.co
+  # VITE_SUPABASE_ANON_KEY=dein_supabase_anon_key_hier

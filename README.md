@@ -151,6 +151,10 @@ Set these in your DigitalOcean App Platform environment:
 - `VITE_SUPABASE_ANON_KEY` - Your Supabase anon/public key
 - `VITE_VAPID_PUBLIC_KEY` - Your VAPID public key for push notifications
 
+**🚨 WICHTIG für DigitalOcean:** 
+Wenn Login "Failed to fetch" zeigt, sind die Supabase Environment Variables nicht gesetzt! 
+Siehe `DIGITALOCEAN_SETUP.md` für detaillierte Anweisungen.
+
 #### Deployment Process:
 1. **Node.js environment** is automatically detected
 2. **Dependencies** are installed (`npm install`)

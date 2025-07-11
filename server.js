@@ -31,12 +31,24 @@ const server = createServer((req, res) => {
   // Clean the file path to prevent directory traversal
   const normalizedPath = filePath.replace(/\.\./g, '');
   
-  // If file doesn't exist, serve index.html (SPA routing)
-  if (!existsSync(normalizedPath)) {
-    console.log(`File not found: ${normalizedPath}, serving index.html`);
-    filePath = join(distDir, 'index.html');
-  } else {
+  // Check if file exists
+  if (existsSync(normalizedPath)) {
     filePath = normalizedPath;
+  } else {
+    // Only serve index.html for routes that look like pages, not assets
+    const isAssetRequest = req.url.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|json|woff|woff2|ttf|eot)$/);
+    
+    if (isAssetRequest) {
+      // Asset not found - return 404
+      console.log(`Asset not found: ${normalizedPath}`);
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      res.end('Not Found');
+      return;
+    } else {
+      // Route not found - serve index.html for SPA routing
+      console.log(`Route not found: ${normalizedPath}, serving index.html for SPA routing`);
+      filePath = join(distDir, 'index.html');
+    }
   }
 
   try {

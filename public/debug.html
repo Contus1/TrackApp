@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Environment Debug</title>
+</head>
+<body>
+    <h1>Environment Variables Debug</h1>
+    <div id="debug-info"></div>
+    
+    <script>
+        const debugInfo = document.getElementById('debug-info');
+        
+        debugInfo.innerHTML = `
+            <h2>Debug Information:</h2>
+            <p><strong>Current URL:</strong> ${window.location.href}</p>
+            <br>
+            <h2>Simple Test:</h2>
+            <p>Test fetching Supabase (should show CORS or connection error, not 'Failed to fetch'):</p>
+            <button onclick="testSupabase()">Test Connection</button>
+            <div id="test-result"></div>
+        `;
+        
+        window.testSupabase = function() {
+            const testResult = document.getElementById('test-result');
+            const testUrl = 'https://zbkshutnsojsrjwzullq.supabase.co/rest/v1/';
+            
+            fetch(testUrl)
+                .then(response => {
+                    testResult.innerHTML = '<p style="color: green;">Connection successful! Status: ' + response.status + '</p>';
+                })
+                .catch(error => {
+                    testResult.innerHTML = '<p style="color: red;">Error: ' + error.message + '</p>';
+                });
+        };
+    </script>
+</body>
+</html>

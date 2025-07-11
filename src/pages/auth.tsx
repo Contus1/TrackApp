@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { supabase } from '../services/supabase';
+import { supabase, isSupabaseConfigured } from '../services/supabase';
 
 interface AuthPageProps {
   onLogin: () => void;
@@ -13,6 +13,46 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin, onBack }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+
+  // Show configuration error if Supabase is not properly set up
+  if (!isSupabaseConfigured) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-3xl p-8 shadow-xl max-w-md w-full text-center">
+          <div className="text-6xl mb-6">⚙️</div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Setup Required</h1>
+          <p className="text-gray-600 mb-6 leading-relaxed">
+            The app needs to be configured with Supabase credentials to enable authentication and data storage.
+          </p>
+          
+          <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4 mb-6 text-left">
+            <h3 className="font-semibold text-orange-800 mb-2">Missing Environment Variables:</h3>
+            <ul className="text-sm text-orange-700 space-y-1">
+              <li>• VITE_SUPABASE_URL</li>
+              <li>• VITE_SUPABASE_ANON_KEY</li>
+            </ul>
+          </div>
+
+          <div className="space-y-3">
+            {onBack && (
+              <button 
+                onClick={onBack}
+                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-semibold transition-all"
+              >
+                ← Back to App
+              </button>
+            )}
+            <button 
+              onClick={() => window.open('https://supabase.com', '_blank')}
+              className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-3 rounded-xl font-semibold hover:from-orange-600 hover:to-red-600 transition-all"
+            >
+              Get Supabase Setup Guide
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +81,25 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin, onBack }) => {
         setMessage('Great! Check your email for confirmation.');
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'An error occurred';
+      let errorMessage = 'An error occurred';
+      
+      if (error instanceof Error) {
+        if (error.message.includes('fetch')) {
+          errorMessage = 'Connection failed. Please check your internet connection and Supabase configuration.';
+        } else if (error.message.includes('Invalid login credentials')) {
+          errorMessage = 'Invalid email or password. Please try again.';
+        } else if (error.message.includes('Password should be at least 6 characters')) {
+          errorMessage = 'Password must be at least 6 characters long.';
+        } else if (error.message.includes('Invalid email')) {
+          errorMessage = 'Please enter a valid email address.';
+        } else if (error.message.includes('User already registered')) {
+          errorMessage = 'An account with this email already exists. Try logging in instead.';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
+      console.error('Auth error:', error);
       setMessage(errorMessage);
     } finally {
       setLoading(false);

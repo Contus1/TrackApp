@@ -25,6 +25,8 @@ const SimpleInviteAcceptor: React.FC<SimpleInviteAcceptorProps> = ({
 
   const checkInvite = useCallback(async () => {
     try {
+      console.log('🔍 Checking invite with token:', token);
+      
       // Hole zuerst die Einladung
       const { data: friendData, error: friendError } = await supabase
         .from('friends')

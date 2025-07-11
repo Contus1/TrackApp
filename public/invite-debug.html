@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invite Debug</title>
+</head>
+<body>
+    <h1>Invite Link Debug</h1>
+    <div id="debug-info"></div>
+    
+    <script>
+        const debugInfo = document.getElementById('debug-info');
+        const url = window.location.href;
+        const path = window.location.pathname;
+        
+        debugInfo.innerHTML = `
+            <h2>URL Information:</h2>
+            <p><strong>Full URL:</strong> ${url}</p>
+            <p><strong>Path:</strong> ${path}</p>
+            <p><strong>Token:</strong> ${path.split('/invite/')[1] || 'Not found'}</p>
+            <br>
+            <h2>Status:</h2>
+            <p>If you can see this page, the routing is working!</p>
+            <p>The issue might be in the React component.</p>
+            <br>
+            <a href="/" style="color: blue; text-decoration: underline;">← Back to App</a>
+        `;
+    </script>
+</body>
+</html>

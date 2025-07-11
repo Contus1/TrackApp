@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Environment Debug</title>
+</head>
+<body>
+    <h1>Environment Variables Debug</h1>
+    <div id="debug-info"></div>
+    
+    <script>
+        const debugInfo = document.getElementById('debug-info');
+        
+        // Check runtime environment variables (these are set at build time in Vite)
+        const runtimeEnv = {
+            VITE_SUPABASE_URL: typeof window !== 'undefined' && window.location ? 
+                new URLSearchParams(window.location.search).get('VITE_SUPABASE_URL') || 
+                (typeof process !== 'undefined' && process.env ? process.env.VITE_SUPABASE_URL : 'Not available') : 'Not available',
+            VITE_SUPABASE_ANON_KEY: typeof window !== 'undefined' && window.location ? 
+                new URLSearchParams(window.location.search).get('VITE_SUPABASE_ANON_KEY') || 
+                (typeof process !== 'undefined' && process.env ? process.env.VITE_SUPABASE_ANON_KEY : 'Not available') : 'Not available'
+        };
+        
+        // Try to access the built-in env variables
+        let builtEnv = {};
+        try {
+            // These would be available if properly built with environment variables
+            builtEnv = import.meta?.env || {};
+        } catch (e) {
+            builtEnv = { error: 'import.meta.env not available: ' + e.message };
+        }
+        
+        debugInfo.innerHTML = `
+            <h2>Debug Information:</h2>
+            <p><strong>Current URL:</strong> ${window.location.href}</p>
+            <p><strong>Build-time Env Available:</strong> ${typeof import !== 'undefined' && import.meta ? 'Yes' : 'No'}</p>
+            <br>
+            <h2>Built Environment Variables:</h2>
+            <pre>${JSON.stringify(builtEnv, null, 2)}</pre>
+            <br>
+            <h2>Runtime Check:</h2>
+            <pre>${JSON.stringify(runtimeEnv, null, 2)}</pre>
+            <br>
+            <h2>Simple Test:</h2>
+            <p>Test fetching Supabase (should show CORS or connection error, not 'Failed to fetch'):</p>
+            <button onclick="testSupabase()">Test Connection</button>
+            <div id="test-result"></div>
+        `;
+        
+        window.testSupabase = function() {
+            const testResult = document.getElementById('test-result');
+            const testUrl = 'https://zbkshutnsojsrjwzullq.supabase.co/rest/v1/';
+            
+            fetch(testUrl)
+                .then(response => {
+                    testResult.innerHTML = `<p style="color: green;">✅ Connection successful! Status: ${response.status}</p>`;
+                })
+                .catch(error => {
+                    testResult.innerHTML = `<p style="color: red;">❌ Error: ${error.message}</p>`;
+                });
+        };
+    </script>
+</body>
+</html>
