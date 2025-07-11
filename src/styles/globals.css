@@ -128,3 +128,135 @@ button, a {
 .touch-scroll {
   -webkit-overflow-scrolling: touch;
 }
+
+/* Flame animation for streak components */
+@keyframes flame-flicker {
+  0% {
+    transform: scaleY(1) scaleX(1) rotate(-1deg);
+    opacity: 0.9;
+  }
+  25% {
+    transform: scaleY(1.1) scaleX(0.95) rotate(1deg);
+    opacity: 0.95;
+  }
+  50% {
+    transform: scaleY(0.95) scaleX(1.05) rotate(-0.5deg);
+    opacity: 0.85;
+  }
+  75% {
+    transform: scaleY(1.05) scaleX(0.98) rotate(0.5deg);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scaleY(1.2) scaleX(1.02) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.flame-flicker {
+  animation: flame-flicker 1.5s ease-in-out infinite alternate;
+}
+
+.flame-flicker-reverse {
+  animation: flame-flicker 1.2s ease-in-out infinite alternate-reverse;
+}
+
+.flame-flicker-fast {
+  animation: flame-flicker 0.8s ease-in-out infinite alternate;
+}
+
+.flame-flicker-super-fast {
+  animation: flame-flicker 0.5s ease-in-out infinite alternate-reverse;
+}
+
+/* Professional gradient utilities */
+.gradient-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.gradient-success {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.gradient-warning {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.gradient-purple {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Glass morphism effects for modern UI */
+.glass {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.glass-dark {
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+/* Smooth animations for professional feel */
+.smooth-bounce {
+  animation: smooth-bounce 0.3s ease-out;
+}
+
+@keyframes smooth-bounce {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Mobile-first improvements */
+@media (max-width: 640px) {
+  .mobile-card {
+    border-radius: 1rem;
+    margin: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+  
+  .mobile-btn {
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus indicators for better accessibility */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+/* Loading skeleton animations */
+@keyframes shimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 37%, #f0f0f0 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}

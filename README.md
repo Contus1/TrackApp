@@ -3,6 +3,8 @@
 - 🏃‍♂️ Track workouts (Gym, Running, Yoga, etc.)
 - 🔥 Streak system with 3-day rule
 - 👥 Invite friends and compare progress
+- 🗑️ **NEW: Remove friends** - Remove wrong accounts or inactive friends from your list
+- 🤖 **NEW: AI Training Coach** - Get personalized feedback and recommendations based on your training data
 - 📱 **Progressive Web App (PWA)** - Install on your phone's home screen
 - 🔔 **Push notifications** - Send motivation messages to friends who haven't been training
 - 💪 Friend profiles with 7-day activity timelines
@@ -60,6 +62,32 @@ The app now includes a friend motivation system:
 3. If a friend hasn't trained in 2+ days, you'll see a "Send Motivation" button
 4. Choose between quick motivation or custom messages
 5. Friend receives an instant push notification to get back to training!
+
+## 🤖 AI Training Coach
+
+The AI Training Coach analyzes your workout data and provides personalized insights:
+
+### **What it analyzes:**
+- **Training frequency** - How often you work out per week
+- **Mood patterns** - How you feel during and after workouts
+- **Sport variety** - Diversity in your training routine
+- **Consistency** - Your streak patterns and regularity
+- **Recent performance** - Your activity in the past week
+
+### **What you get:**
+- **Overall fitness score** (0-100) based on multiple factors
+- **Personalized recommendations** for improving your routine
+- **Motivational tips** tailored to your current situation
+- **Next goals** to keep you progressing
+- **Quick insights** right on your dashboard
+
+### **How to use:**
+1. **Train regularly** and log your workouts with mood
+2. **Click the 🤖 AI button** next to the add workout button
+3. **Get instant analysis** of your training patterns
+4. **Follow recommendations** to optimize your routine
+
+The AI considers factors like training frequency, mood trends, sport variety, and consistency to give you actionable feedback for better results!
 
 ## Setup
 

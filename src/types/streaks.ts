@@ -6,7 +6,7 @@ export interface Streak {
   date: string; // YYYY-MM-DD format
   sport: 'gym' | 'running' | 'yoga' | 'swimming' | 'cycling' | 'other';
   category?: 'chest' | 'legs' | 'back' | 'arms' | 'shoulders' | 'core' | 'fullbody';
-  mood: 'good' | 'okay' | 'bad';
+  mood: 'gut' | 'mittel' | 'schlecht';
   created_at: string;
   updated_at: string;
 }
@@ -59,9 +59,9 @@ export const GYM_CATEGORIES = [
 ] as const;
 
 export const MOOD_OPTIONS = [
-  { value: 'good', label: 'Good 😊', emoji: '😊' },
-  { value: 'okay', label: 'Okay 😐', emoji: '😐' },
-  { value: 'bad', label: 'Bad 😞', emoji: '😞' }
+  { value: 'gut', label: 'Gut 😊', emoji: '😊' },
+  { value: 'mittel', label: 'Mittel 😐', emoji: '😐' },
+  { value: 'schlecht', label: 'Schlecht 😞', emoji: '😞' }
 ] as const;
 
 // Insert/Update Typen

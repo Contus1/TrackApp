@@ -7,9 +7,10 @@ import { notificationService } from '../services/notificationService';
 interface FriendProfileProps {
   friend: FriendWithStreak;
   onBack: () => void;
+  onRemoveFriend: (friendId: string) => Promise<void>;
 }
 
-const FriendProfile: React.FC<FriendProfileProps> = ({ friend, onBack }) => {
+const FriendProfile: React.FC<FriendProfileProps> = ({ friend, onBack, onRemoveFriend }) => {
   const [friendStreaks, setFriendStreaks] = useState<Streak[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -160,7 +161,13 @@ const FriendProfile: React.FC<FriendProfileProps> = ({ friend, onBack }) => {
             </div>
           </div>
           
-          <div className="w-10"></div> {/* Spacer for centering */}
+          <button
+            onClick={() => onRemoveFriend(friend.id)}
+            className="w-10 h-10 rounded-full bg-red-50 hover:bg-red-100 flex items-center justify-center text-red-600 transition-colors"
+            title="Remove friend"
+          >
+            🗑️
+          </button>
         </div>
       </header>
 
@@ -318,6 +325,26 @@ const FriendProfile: React.FC<FriendProfileProps> = ({ friend, onBack }) => {
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* Remove Friend Section */}
+          <div className="bg-gray-50 rounded-3xl p-6 border border-gray-200">
+            <div className="text-center">
+              <div className="text-2xl mb-3">⚠️</div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Remove Friend
+              </h3>
+              <p className="text-gray-600 text-sm mb-4">
+                If you remove {friend.display_name || friend.email?.split('@')[0] || 'this friend'}, they will no longer appear in your friends list and you won't be able to see their activity.
+              </p>
+              
+              <button
+                onClick={() => onRemoveFriend(friend.id)}
+                className="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-2xl transition-all duration-200"
+              >
+                🗑️ Remove Friend
+              </button>
             </div>
           </div>
         </div>

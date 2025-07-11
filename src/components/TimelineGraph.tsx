@@ -49,7 +49,7 @@ const TimelineGraph: React.FC<TimelineGraphProps> = ({
     if (dayStreaks.length === 0) return 'bg-gray-200';
     
     const avgMood = dayStreaks.reduce((sum, streak) => {
-      const moodValue = streak.mood === 'good' ? 3 : streak.mood === 'okay' ? 2 : 1;
+      const moodValue = streak.mood === 'gut' ? 3 : streak.mood === 'mittel' ? 2 : 1;
       return sum + moodValue;
     }, 0) / dayStreaks.length;
     

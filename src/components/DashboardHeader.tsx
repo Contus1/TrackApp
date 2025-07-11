@@ -34,36 +34,40 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ user, onLogout, onPro
   }, [user.id, user.email]);
 
   return (
-    <header className="bg-white border-b border-gray-100 px-6 py-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 via-red-500 to-yellow-500 flex items-center justify-center">
-            <span className="text-lg">🔥</span>
+    <header className="bg-white border-b border-gray-100 safe-top shadow-sm">
+      <div className="mobile-container py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3 flex-1 min-w-0">
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-orange-500 via-red-500 to-pink-600 flex items-center justify-center shadow-lg">
+              <span className="text-lg sm:text-xl">🔥</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <h1 className="text-lg sm:text-xl font-bold text-gray-900 truncate">
+                Hey, {displayName}!
+              </h1>
+              <p className="text-xs sm:text-sm text-gray-600 font-medium">
+                Keep the streak going 🚀
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">
-              Hey, {displayName}!
-            </h1>
-            <p className="text-sm text-gray-600">
-              Keep the streak going 🚀
-            </p>
-          </div>
-        </div>
-        
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={onProfileClick}
-            className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-red-600 flex items-center justify-center text-white font-semibold hover:from-orange-500 hover:to-red-700 transition-all"
-          >
-            {displayName[0].toUpperCase()}
-          </button>
           
-          <button
-            onClick={onLogout}
-            className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
-          >
-            <span className="text-gray-600">→</span>
-          </button>
+          <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
+            <button
+              onClick={onProfileClick}
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold hover:from-indigo-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 text-sm sm:text-base"
+              aria-label="View profile"
+            >
+              {displayName[0].toUpperCase()}
+            </button>
+            
+            <button
+              onClick={onLogout}
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95"
+              aria-label="Logout"
+            >
+              <span className="text-gray-600 text-lg">→</span>
+            </button>
+          </div>
         </div>
       </div>
     </header>

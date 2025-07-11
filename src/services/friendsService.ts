@@ -170,14 +170,39 @@ export const friendsService = {
   // Freund entfernen
   async removeFriend(userId: string, friendId: string): Promise<{ error: unknown }> {
     try {
-      // Beide Richtungen der Freundschaft löschen
-      await supabase
+      console.log('Removing friend relationship between:', userId, 'and', friendId);
+      
+      // Delete both directions of the friendship using two separate queries for clarity
+      const { error: error1 } = await supabase
         .from('friends')
         .delete()
-        .or(`and(inviter_id.eq.${userId},invitee_id.eq.${friendId}),and(inviter_id.eq.${friendId},invitee_id.eq.${userId})`);
+        .eq('inviter_id', userId)
+        .eq('invitee_id', friendId);
       
+      if (error1) {
+        console.error('Error deleting first direction:', error1);
+      }
+      
+      const { error: error2 } = await supabase
+        .from('friends')
+        .delete()
+        .eq('inviter_id', friendId)
+        .eq('invitee_id', userId);
+      
+      if (error2) {
+        console.error('Error deleting second direction:', error2);
+      }
+      
+      // If either deletion had an error, report it
+      if (error1 && error2) {
+        console.error('Both deletion attempts failed:', { error1, error2 });
+        throw error1; // Throw the first error
+      }
+      
+      console.log('Friend relationship deleted successfully');
       return { error: null };
     } catch (error) {
+      console.error('Error in removeFriend:', error);
       return { error };
     }
   }
