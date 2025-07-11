@@ -1,9 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Session } from '@supabase/supabase-js';
 
-// Supabase-Konfiguration
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+// Supabase-Konfiguration mit Fallback-Werten
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://zbkshutnsojsrjwzullq.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpia3NodXRuc29qc3Jqd3p1bGxxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwMDIzMDksImV4cCI6MjA2NzU3ODMwOX0.G3h5PuawfEi3h3CmH6BQx_TQ24yOW28Pleq1ftjXe-M';
+
+console.log('🔧 Supabase Config:', {
+  url: supabaseUrl,
+  hasKey: !!supabaseAnonKey,
+  keyPreview: supabaseAnonKey?.substring(0, 20) + '...'
+});
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.warn('⚠️ Supabase environment variables not found. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your deployment environment.');

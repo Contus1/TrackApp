@@ -5,7 +5,7 @@ services:
   github:
     branch: main
     deploy_on_push: true
-  build_command: npm run build
+  build_command: VITE_SUPABASE_URL=https://zbkshutnsojsrjwzullq.supabase.co VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpia3NodXRuc29qc3Jqd3p1bGxxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwMDIzMDksImV4cCI6MjA2NzU3ODMwOX0.G3h5PuawfEi3h3CmH6BQx_TQ24yOW28Pleq1ftjXe-M npm run build
   run_command: node server.js
   environment_slug: node-js
   instance_count: 1
