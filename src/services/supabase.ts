@@ -1,25 +1,27 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Session } from '@supabase/supabase-js';
+import { SUPABASE_CONFIG } from '../config/supabase-config';
 
-// Supabase-Konfiguration mit Fallback-Werten
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://zbkshutnsojsrjwzullq.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpia3NodXRuc29qc3Jqd3p1bGxxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwMDIzMDksImV4cCI6MjA2NzU3ODMwOX0.G3h5PuawfEi3h3CmH6BQx_TQ24yOW28Pleq1ftjXe-M';
+// Verwende statische Konfiguration als primäre Quelle
+const supabaseUrl = SUPABASE_CONFIG.url;
+const supabaseAnonKey = SUPABASE_CONFIG.anonKey;
 
-console.log('🔧 Supabase Config:', {
+console.log('🔧 Supabase Config (Static):', {
   url: supabaseUrl,
   hasKey: !!supabaseAnonKey,
   keyPreview: supabaseAnonKey?.substring(0, 20) + '...'
 });
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('⚠️ Supabase environment variables not found. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your deployment environment.');
-  console.warn('The app will run in demo mode without backend functionality.');
+  console.error('❌ Supabase configuration missing!');
+  console.error('URL:', supabaseUrl);
+  console.error('Key:', supabaseAnonKey ? 'Present' : 'Missing');
+} else {
+  console.log('✅ Supabase configuration loaded successfully');
 }
 
-// Supabase-Client erstellen mit Fallback
-export const supabase = supabaseUrl && supabaseAnonKey 
-  ? createClient(supabaseUrl, supabaseAnonKey)
-  : createClient('https://demo.supabase.co', 'demo-key'); // Fallback client that won't work but won't crash
+// Supabase-Client erstellen - keine Fallbacks mehr nötig
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Check if Supabase is properly configured
 export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
