@@ -140,10 +140,10 @@ The app is configured for easy deployment on DigitalOcean App Platform:
 5. **The app will build and deploy** using the provided configuration
 
 #### Configuration Files:
-- `Procfile` - Tells DigitalOcean how to start the app
+- `Procfile` - Tells DigitalOcean how to start the app (`web: node server.js`)
 - `.do/app.yaml` - DigitalOcean App Platform configuration
-- `serve.json` - Static file serving configuration with SPA routing
-- `package.json` - Includes `start` script for production
+- `server.js` - Simple Node.js HTTP server for serving static files with SPA routing
+- `package.json` - Includes `start` script for production (`node server.js`)
 
 #### Environment Variables:
 Set these in your DigitalOcean App Platform environment:
@@ -151,11 +151,23 @@ Set these in your DigitalOcean App Platform environment:
 - `VITE_SUPABASE_ANON_KEY` - Your Supabase anon/public key
 - `VITE_VAPID_PUBLIC_KEY` - Your VAPID public key for push notifications
 
-#### Build Process:
-1. Node.js environment is set up
-2. Dependencies are installed (`npm install`)
-3. App is built for production (`npm run build`)
-4. Static files are served using `serve` package on port 8080
+#### Deployment Process:
+1. **Node.js environment** is automatically detected
+2. **Dependencies** are installed (`npm install`)
+3. **Production build** is created (`npm run build`)
+4. **HTTP server** starts serving static files (`node server.js` on port 8080)
+5. **Health checks** verify the app is running on port 8080
+
+#### Troubleshooting Deployment:
+If deployment fails, check these common issues:
+
+1. **Missing start command**: Ensure `package.json` has a `start` script
+2. **Port binding**: The server must listen on `0.0.0.0:$PORT` (not just `localhost`)
+3. **Build errors**: Check build logs for TypeScript or dependency issues
+4. **Environment variables**: Ensure all required environment variables are set
+5. **Health check failures**: The server must respond to HTTP requests on the configured port
+
+The current setup uses a simple Node.js HTTP server that properly binds to `0.0.0.0:8080` and handles SPA routing.
 
 ### Other Deployment Options
 

@@ -14,14 +14,13 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "serve -c serve.json -l 8080"
+    "start": "node server.js"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "@supabase/supabase-js": "^2.50.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "serve": "^14.2.4",
     "web-push": "^3.6.7"
   },
   "devDependencies": {

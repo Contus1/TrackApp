@@ -37,10 +37,10 @@ const AIAdvisor: React.FC<AIAdvisorProps> = ({ streaks, isVisible, onClose }) =>
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-end sm:items-center justify-center p-0 sm:p-4 z-50 backdrop-blur-sm">
-      <div className="bg-white rounded-t-3xl sm:rounded-3xl w-full sm:max-w-lg sm:w-full h-[90vh] sm:h-auto sm:max-h-[95vh] overflow-hidden shadow-2xl border-t border-gray-100 sm:border">
+    <div className="fixed inset-0 bg-white bg-opacity-95 flex items-end sm:items-center justify-center p-0 sm:p-4 z-50 backdrop-blur-sm">
+      <div className="bg-white rounded-t-3xl sm:rounded-3xl w-full sm:max-w-lg sm:w-full max-h-[95vh] flex flex-col shadow-2xl border-t border-gray-100 sm:border">
         {/* Header with improved gradient */}
-        <div className="bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 text-white rounded-t-3xl sticky top-0 z-10 shadow-lg">
+        <div className="bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 text-white rounded-t-3xl flex-shrink-0 shadow-lg">
           <div className="p-4 sm:p-6">
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-3">
@@ -74,7 +74,7 @@ const AIAdvisor: React.FC<AIAdvisorProps> = ({ streaks, isVisible, onClose }) =>
         </div>
 
         {/* Content with improved scrolling */}
-        <div className="flex-1 overflow-y-auto touch-scroll p-4 sm:p-6 bg-gradient-to-b from-gray-50 to-white">
+        <div className="flex-1 overflow-y-auto touch-scroll p-4 sm:p-6 bg-gradient-to-b from-gray-50 to-white min-h-0">
           {isLoading ? (
             <div className="text-center py-8 sm:py-12">
               <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-2xl mb-6 shadow-inner">
@@ -198,7 +198,7 @@ const AIAdvisor: React.FC<AIAdvisorProps> = ({ streaks, isVisible, onClose }) =>
         </div>
 
         {/* Enhanced Footer */}
-        <div className="bg-white border-t border-gray-100 sticky bottom-0 shadow-lg">
+        <div className="bg-white border-t border-gray-100 flex-shrink-0 shadow-lg">
           <div className="p-4 sm:p-5">
             <div className="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
               <div className="text-xs sm:text-sm text-gray-500 text-center sm:text-left flex items-center">

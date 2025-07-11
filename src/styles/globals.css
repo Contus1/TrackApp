@@ -260,3 +260,37 @@ select:focus-visible {
   background-size: 400% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
 }
+
+/* Modal scrolling improvements */
+.modal-content {
+  /* Ensure modal content can scroll properly */
+  max-height: 100vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.modal-backdrop {
+  /* Prevent body scroll when modal is open */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+
+/* Fix for iOS safari modal scrolling */
+@supports (-webkit-touch-callout: none) {
+  .modal-content {
+    /* iOS-specific scrolling fix */
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Ensure modals work well on all devices */
+@media (max-height: 600px) {
+  .modal-content {
+    max-height: 90vh;
+  }
+}
