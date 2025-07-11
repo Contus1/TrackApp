@@ -6,11 +6,17 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('Supabase-Umgebungsvariablen nicht gefunden. Bitte überprüfen Sie Ihre .env-Datei.');
+  console.warn('⚠️ Supabase environment variables not found. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your deployment environment.');
+  console.warn('The app will run in demo mode without backend functionality.');
 }
 
-// Supabase-Client erstellen
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Supabase-Client erstellen mit Fallback
+export const supabase = supabaseUrl && supabaseAnonKey 
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : createClient('https://demo.supabase.co', 'demo-key'); // Fallback client that won't work but won't crash
+
+// Check if Supabase is properly configured
+export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
 
 // Basic Types
 interface Exercise {

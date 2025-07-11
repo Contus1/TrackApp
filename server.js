@@ -24,11 +24,19 @@ const mimeTypes = {
 };
 
 const server = createServer((req, res) => {
+  console.log(`Request: ${req.method} ${req.url}`);
+  
   let filePath = join(distDir, req.url === '/' ? 'index.html' : req.url);
   
+  // Clean the file path to prevent directory traversal
+  const normalizedPath = filePath.replace(/\.\./g, '');
+  
   // If file doesn't exist, serve index.html (SPA routing)
-  if (!existsSync(filePath)) {
+  if (!existsSync(normalizedPath)) {
+    console.log(`File not found: ${normalizedPath}, serving index.html`);
     filePath = join(distDir, 'index.html');
+  } else {
+    filePath = normalizedPath;
   }
 
   try {
@@ -36,14 +44,21 @@ const server = createServer((req, res) => {
     const ext = extname(filePath);
     const mimeType = mimeTypes[ext] || 'text/plain';
     
-    res.writeHead(200, { 'Content-Type': mimeType });
+    console.log(`Serving: ${filePath} (${mimeType})`);
+    res.writeHead(200, { 
+      'Content-Type': mimeType,
+      'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=31536000'
+    });
     res.end(content);
   } catch (error) {
+    console.error(`Error serving file: ${error.message}`);
     res.writeHead(404, { 'Content-Type': 'text/plain' });
     res.end('Not Found');
   }
 });
 
 server.listen(port, '0.0.0.0', () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`🚀 Server running on port ${port}`);
+  console.log(`📁 Serving files from: ${distDir}`);
+  console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
