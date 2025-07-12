@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Supabase Auth Debug</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body style="font-family: Arial, sans-serif; padding: 20px;">
+    <h1>🔍 Supabase Auth Debug Tool</h1>
+    
+    <div id="status" style="margin: 20px 0; padding: 15px; border-radius: 8px; background: #f0f0f0;">
+        <strong>Status:</strong> Initializing...
+    </div>
+    
+    <div style="margin: 20px 0;">
+        <h3>Test Authentication</h3>
+        <input type="email" id="email" placeholder="Email" value="test@example.com" style="padding: 8px; margin: 5px; width: 200px;">
+        <input type="password" id="password" placeholder="Password" value="testpassword" style="padding: 8px; margin: 5px; width: 200px;">
+        <button onclick="testAuth()" style="padding: 8px 16px; margin: 5px;">Test Login</button>
+    </div>
+    
+    <div id="logs" style="background: #000; color: #0f0; padding: 15px; border-radius: 8px; font-family: monospace; height: 300px; overflow-y: auto;">
+        <div>Loading...</div>
+    </div>
+
+    <script>
+        const SUPABASE_CONFIG = {
+            url: 'https://zbkshutnsojsrjwzullq.supabase.co',
+            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpia3NodXRuc29qc3Jqd3p1bGxxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwMDIzMDksImV4cCI6MjA2NzU3ODMwOX0.G3h5PuawfEi3h3CmH6BQx_TQ24yOW28Pleq1ftjXe-M'
+        };
+
+        let supabase;
+        const logsDiv = document.getElementById('logs');
+        const statusDiv = document.getElementById('status');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const colors = {
+                info: '#0ff',
+                success: '#0f0', 
+                error: '#f00',
+                warning: '#ff0'
+            };
+            
+            logsDiv.innerHTML += `<div style="color: ${colors[type]}">[${timestamp}] ${message}</div>`;
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+        }
+
+        async function initializeSupabase() {
+            try {
+                log('🔄 Initializing Supabase client...', 'info');
+                log(`📍 URL: ${SUPABASE_CONFIG.url}`, 'info');
+                log(`🔑 Key: ${SUPABASE_CONFIG.anonKey.substring(0, 20)}...`, 'info');
+                
+                supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+                
+                log('✅ Supabase client created successfully', 'success');
+                statusDiv.innerHTML = '<strong>Status:</strong> <span style="color: green;">Connected ✅</span>';
+                
+                // Test basic connectivity
+                log('🔗 Testing basic connectivity...', 'info');
+                const { data, error } = await supabase.from('profiles').select('*').limit(1);
+                
+                if (error) {
+                    log(`⚠️ Database query failed: ${error.message}`, 'warning');
+                    log('💡 This might be normal due to RLS policies', 'info');
+                } else {
+                    log('✅ Database connection successful', 'success');
+                }
+                
+            } catch (error) {
+                log(`💥 Failed to initialize Supabase: ${error.message}`, 'error');
+                statusDiv.innerHTML = '<strong>Status:</strong> <span style="color: red;">Failed ❌</span>';
+            }
+        }
+
+        async function testAuth() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!supabase) {
+                log('❌ Supabase not initialized', 'error');
+                return;
+            }
+            
+            try {
+                log(`🔐 Testing authentication with ${email}...`, 'info');
+                log('📡 Making auth request...', 'info');
+                
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password
+                });
+                
+                if (error) {
+                    if (error.message.includes('Invalid login credentials')) {
+                        log('✅ Auth endpoint working (invalid credentials expected)', 'success');
+                        log('💡 The "Failed to fetch" error is NOT occurring!', 'success');
+                    } else if (error.message.includes('fetch')) {
+                        log('❌ CORS/Network error detected!', 'error');
+                        log(`🔍 Error details: ${error.message}`, 'error');
+                        log('💡 Check Supabase dashboard CORS settings', 'warning');
+                    } else {
+                        log(`ℹ️ Auth error: ${error.message}`, 'info');
+                    }
+                } else {
+                    log('🎉 Unexpected success with test credentials!', 'success');
+                }
+                
+            } catch (error) {
+                log(`💥 Network/fetch error: ${error.message}`, 'error');
+                log('🔍 This suggests a CORS or connectivity issue', 'error');
+                
+                if (error.message.includes('fetch')) {
+                    log('🛠️ Suggested fixes:', 'warning');
+                    log('  1. Check Site URL in Supabase dashboard', 'warning');
+                    log('  2. Add current domain to Allowed Origins', 'warning');
+                    log('  3. Verify Supabase project is active', 'warning');
+                }
+            }
+        }
+
+        // Initialize when page loads
+        window.onload = initializeSupabase;
+    </script>
+</body>
+</html>

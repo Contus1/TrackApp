@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { supabase, isSupabaseConfigured } from '../services/supabase';
+import { SUPABASE_CONFIG } from '../config/supabase-config';
 
 interface AuthPageProps {
   onLogin: () => void;
@@ -60,15 +61,25 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin, onBack }) => {
     setMessage('');
 
     try {
+      console.log('🔐 Starting authentication...', { email, isLogin });
+      console.log('🌐 Using Supabase config from:', SUPABASE_CONFIG.url);
+      
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
+        console.log('📝 Attempting sign in...');
+        const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
+        
+        console.log('📊 Sign in result:', { data, error });
+        
         if (error) throw error;
+        
+        console.log('✅ Sign in successful!');
         onLogin();
       } else {
-        const { error } = await supabase.auth.signUp({
+        console.log('📝 Attempting sign up...');
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -77,15 +88,25 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin, onBack }) => {
             },
           },
         });
+        
+        console.log('📊 Sign up result:', { data, error });
+        
         if (error) throw error;
         setMessage('Great! Check your email for confirmation.');
       }
     } catch (error: unknown) {
+      console.error('💥 Auth error details:', {
+        error,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      });
+      
       let errorMessage = 'An error occurred';
       
       if (error instanceof Error) {
-        if (error.message.includes('fetch')) {
-          errorMessage = 'Connection failed. Please check your internet connection and Supabase configuration.';
+        if (error.message.includes('fetch') || error.message.includes('Failed to fetch')) {
+          errorMessage = 'Connection failed. Please check:\n• Your internet connection\n• Supabase project is running\n• CORS settings in Supabase dashboard';
+          console.error('🌐 Network/CORS issue detected. Check Supabase dashboard settings.');
         } else if (error.message.includes('Invalid login credentials')) {
           errorMessage = 'Invalid email or password. Please try again.';
         } else if (error.message.includes('Password should be at least 6 characters')) {
@@ -99,7 +120,6 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin, onBack }) => {
         }
       }
       
-      console.error('Auth error:', error);
       setMessage(errorMessage);
     } finally {
       setLoading(false);
