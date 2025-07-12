@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { supabase, isSupabaseConfigured } from '../services/supabase';
-import { SUPABASE_CONFIG } from '../config/supabase-config';
 
 interface AuthPageProps {
   onLogin: () => void;
@@ -67,7 +66,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin, onBack }) => {
         userAgent: navigator.userAgent,
         browser: getBrowserInfo()
       });
-      console.log('🌐 Using Supabase config from:', SUPABASE_CONFIG.url);
+      console.log('🌐 Using Supabase config from:', process.env.REACT_APP_SUPABASE_URL);
       
       // Browser-spezifische Workarounds
       const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);

@@ -1,12 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Session } from '@supabase/supabase-js';
-import { SUPABASE_CONFIG } from '../config/supabase-config';
 
-// Verwende statische Konfiguration als primäre Quelle
-const supabaseUrl = SUPABASE_CONFIG.url;
-const supabaseAnonKey = SUPABASE_CONFIG.anonKey;
+// Use React Scripts environment variables
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL!;
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY!;
 
-console.log('🔧 Supabase Config (Static):', {
+console.log('🔧 Supabase Config (React Scripts):', {
   url: supabaseUrl,
   hasKey: !!supabaseAnonKey,
   keyPreview: supabaseAnonKey?.substring(0, 20) + '...'
