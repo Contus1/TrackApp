@@ -4,7 +4,7 @@ import type { User } from '@supabase/supabase-js';
 import LandingPage from '../pages/landing';
 import DashboardPage from '../pages/dashboard';
 import AuthPage from '../pages/auth';
-import SimpleInviteAcceptor from '../components/SimpleInviteAcceptor';
+import InviteHandler from '../components/InviteHandler';
 
 // Simple Router für die TrackApp
 const AppRouter: React.FC = () => {
@@ -102,7 +102,7 @@ const AppRouter: React.FC = () => {
   switch (currentRoute.path) {
     case '/invite':
       return (
-        <SimpleInviteAcceptor
+        <InviteHandler
           token={currentRoute.params?.token || ''}
           user={user}
           onCompleted={() => navigate('/')}

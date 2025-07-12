@@ -20,8 +20,30 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.log('✅ Supabase configuration loaded successfully');
 }
 
-// Supabase-Client erstellen - keine Fallbacks mehr nötig
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Browser-kompatible Supabase-Konfiguration
+const supabaseClientOptions = {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false,
+    flowType: 'pkce' as const,
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+    storageKey: 'supabase.auth.token',
+  },
+  realtime: {
+    params: {
+      eventsPerSecond: 2,
+    },
+  },
+  global: {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  },
+};
+
+// Supabase-Client mit optimierten Browser-Einstellungen erstellen
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, supabaseClientOptions);
 
 // Check if Supabase is properly configured
 export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);

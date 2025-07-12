@@ -70,9 +70,18 @@ const FriendsSection: React.FC<FriendsSectionProps> = ({ user, onNavigateToFrien
         alert(errorMessage);
       } else if (data) {
         console.log('✅ Invite created successfully:', data);
-        setInviteLink(data);
-        setInviteEmail('');
-        alert('Einladung erfolgreich erstellt! Link wurde generiert.');
+        
+        // Check if it's an invite link or a direct friend request
+        if ('url' in data) {
+          // It's an invite link
+          setInviteLink(data);
+          setInviteEmail('');
+          alert('Einladung erfolgreich erstellt! Link wurde generiert.');
+        } else {
+          // It's a direct friend request result
+          setInviteEmail('');
+          alert(data.message || 'Freundschaftsanfrage gesendet!');
+        }
       } else {
         alert('Unbekannter Fehler beim Erstellen der Einladung');
       }
