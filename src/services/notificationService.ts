@@ -51,7 +51,7 @@ class NotificationService {
       // Subscribe to push notifications
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: this.urlBase64ToUint8Array(this.vapidPublicKey)
+        applicationServerKey: this.urlBase64ToUint8Array(this.vapidPublicKey) as BufferSource
       });
 
       // Save subscription to database
@@ -156,12 +156,13 @@ class NotificationService {
 
   // Get user's notifications
   async getNotifications(): Promise<NotificationRecord[]> {
-    const { data: user } = await supabase.auth.getUser();
-    if (!user.user) {
-      throw new Error('User not authenticated');
-    }
-
     try {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) {
+        console.warn('User not authenticated for notifications');
+        return [];
+      }
+
       const { data, error } = await supabase
         .from('notifications')
         .select(`
@@ -172,13 +173,15 @@ class NotificationService {
         .order('created_at', { ascending: false });
 
       if (error) {
-        // If table doesn't exist, return empty array instead of throwing
-        if (error.message.includes('relation "public.notifications" does not exist')) {
-          console.warn('Notifications table not found. Please run push-notification-setup.sql in Supabase.');
+        // If table doesn't exist or foreign key issues, return empty array
+        if (error.message.includes('relation "public.notifications" does not exist') ||
+            error.message.includes('foreign key constraint') ||
+            error.message.includes('notifications_sender_id_fkey')) {
+          console.warn('Notifications table not properly configured. Please run push-notification-setup.sql in Supabase.');
           return [];
         }
         console.error('Error fetching notifications:', error);
-        throw error;
+        return [];
       }
 
       return data || [];
@@ -250,7 +253,7 @@ class NotificationService {
       outputArray[i] = rawData.charCodeAt(i);
     }
 
-    return outputArray;
+    return new Uint8Array(outputArray.buffer);
   }
 }
 

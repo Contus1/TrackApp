@@ -54,6 +54,8 @@ const FriendProfile: React.FC<FriendProfileProps> = ({ friend, onBack, onRemoveF
       setNeedsMotivation(needsMotivation);
     } catch (err) {
       console.error('Error checking if friend needs motivation:', err);
+      // Don't show error to user, just disable motivation feature
+      setNeedsMotivation(false);
     }
   }, [friend.id]);
 

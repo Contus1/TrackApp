@@ -40,12 +40,61 @@ const InviteHandler: React.FC<InviteHandlerProps> = ({
     try {
       setStatus('loading');
       
-      const { error } = await friendsService.acceptInviteByToken(token, user.id);
+      // For the simple friends system, we'll just create a direct friendship
+      // This is for legacy invite links - the new system uses friend codes
       
-      if (error) {
+      let invite;
+      try {
+        const storedInvites = localStorage.getItem('pending_invites');
+        const invites = storedInvites ? JSON.parse(storedInvites) : [];
+        invite = invites.find((inv: any) => inv.token === token);
+      } catch (localError) {
+        console.warn('LocalStorage not available:', localError);
+      }
+
+      if (!invite && inviteData) {
+        invite = inviteData;
+      }
+
+      if (!invite) {
         setStatus('error');
-        setMessage(error);
+        setMessage('Einladung nicht gefunden oder bereits verwendet');
         return;
+      }
+
+      // Check if invite is expired
+      if (new Date(invite.expires_at) < new Date()) {
+        setStatus('error');
+        setMessage('Einladung ist abgelaufen');
+        return;
+      }
+
+      // Create friendship using the simple_friendships table
+      const { error: friendshipError } = await supabase
+        .from('simple_friendships')
+        .insert({
+          user_id: invite.inviter_id,
+          friend_id: user.id,
+          created_at: new Date().toISOString()
+        });
+
+      if (friendshipError) {
+        console.error('Friendship creation error:', friendshipError);
+        setStatus('error');
+        setMessage(friendshipError.message || 'Fehler beim Erstellen der Freundschaft');
+        return;
+      }
+
+      // Remove invite from localStorage if it exists there
+      try {
+        const storedInvites = localStorage.getItem('pending_invites');
+        if (storedInvites) {
+          const invites = JSON.parse(storedInvites);
+          const updatedInvites = invites.filter((inv: any) => inv.token !== token);
+          localStorage.setItem('pending_invites', JSON.stringify(updatedInvites));
+        }
+      } catch (localError) {
+        console.warn('Could not update localStorage:', localError);
       }
 
       setStatus('success');
@@ -61,7 +110,7 @@ const InviteHandler: React.FC<InviteHandlerProps> = ({
       setStatus('error');
       setMessage('Fehler beim Annehmen der Einladung');
     }
-  }, [user, token, onCompleted]);
+  }, [user, token, onCompleted, inviteData]);
 
   useEffect(() => {
     const loadInvite = async () => {
@@ -69,12 +118,17 @@ const InviteHandler: React.FC<InviteHandlerProps> = ({
         console.log('🔍 Loading invite with token:', token);
         
         // Try to get invite from localStorage first
-        const { data: invite, error } = await friendsService.getInviteByToken(token);
+        // Query the invites table directly using supabase
+        const { data: invite, error } = await supabase
+          .from('invites')
+          .select('*')
+          .eq('token', token)
+          .single();
         
         if (error) {
           console.error('Invite error:', error);
           setStatus('error');
-          setMessage(error);
+          setMessage(error.message || 'Fehler beim Laden der Einladung');
           return;
         }
 
@@ -164,10 +218,10 @@ const InviteHandler: React.FC<InviteHandlerProps> = ({
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl p-8 shadow-xl max-w-md w-full text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Lade Einladung...</h2>
+      <div className="flex items-center justify-center min-h-screen p-4 bg-gradient-to-br from-blue-50 to-indigo-50">
+        <div className="w-full max-w-md p-8 text-center bg-white shadow-xl rounded-3xl">
+          <div className="w-12 h-12 mx-auto mb-4 border-b-2 border-blue-500 rounded-full animate-spin"></div>
+          <h2 className="mb-2 text-xl font-semibold text-gray-900">Lade Einladung...</h2>
           <p className="text-gray-600">Einen Moment bitte</p>
         </div>
       </div>
@@ -176,22 +230,22 @@ const InviteHandler: React.FC<InviteHandlerProps> = ({
 
   if (status === 'error') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl p-8 shadow-xl max-w-md w-full text-center">
-          <div className="text-6xl mb-6">❌</div>
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Einladung ungültig</h2>
-          <p className="text-gray-600 mb-6">{message}</p>
+      <div className="flex items-center justify-center min-h-screen p-4 bg-gradient-to-br from-red-50 to-pink-50">
+        <div className="w-full max-w-md p-8 text-center bg-white shadow-xl rounded-3xl">
+          <div className="mb-6 text-6xl">❌</div>
+          <h2 className="mb-4 text-xl font-bold text-gray-900">Einladung ungültig</h2>
+          <p className="mb-6 text-gray-600">{message}</p>
           
           <div className="space-y-3">
             <button 
               onClick={onCompleted}
-              className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-semibold transition-all"
+              className="w-full px-6 py-3 font-semibold text-gray-700 transition-all bg-gray-100 hover:bg-gray-200 rounded-xl"
             >
               Zur App
             </button>
             <button 
               onClick={clearBrowserData}
-              className="w-full bg-red-100 hover:bg-red-200 text-red-700 px-6 py-3 rounded-xl font-semibold transition-all"
+              className="w-full px-6 py-3 font-semibold text-red-700 transition-all bg-red-100 hover:bg-red-200 rounded-xl"
             >
               Browser-Daten löschen & neu laden
             </button>
@@ -203,11 +257,11 @@ const InviteHandler: React.FC<InviteHandlerProps> = ({
 
   if (status === 'success') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl p-8 shadow-xl max-w-md w-full text-center">
-          <div className="text-6xl mb-6">🎉</div>
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Erfolgreich verbunden!</h2>
-          <p className="text-gray-600 mb-6">{message}</p>
+      <div className="flex items-center justify-center min-h-screen p-4 bg-gradient-to-br from-green-50 to-emerald-50">
+        <div className="w-full max-w-md p-8 text-center bg-white shadow-xl rounded-3xl">
+          <div className="mb-6 text-6xl">🎉</div>
+          <h2 className="mb-4 text-xl font-bold text-gray-900">Erfolgreich verbunden!</h2>
+          <p className="mb-6 text-gray-600">{message}</p>
           <p className="text-sm text-gray-500">Du wirst automatisch weitergeleitet...</p>
         </div>
       </div>
@@ -217,11 +271,11 @@ const InviteHandler: React.FC<InviteHandlerProps> = ({
   // Show auth form if user is not logged in
   if (!user && showAuth) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl p-8 shadow-xl max-w-md w-full">
-          <div className="text-center mb-8">
-            <div className="text-6xl mb-4">👋</div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Freundeseinladung</h2>
+      <div className="flex items-center justify-center min-h-screen p-4 bg-gradient-to-br from-blue-50 to-indigo-50">
+        <div className="w-full max-w-md p-8 bg-white shadow-xl rounded-3xl">
+          <div className="mb-8 text-center">
+            <div className="mb-4 text-6xl">👋</div>
+            <h2 className="mb-2 text-2xl font-bold text-gray-900">Freundeseinladung</h2>
             <p className="text-gray-600">
               {inviteData?.invitee_email ? `Einladung für ${inviteData.invitee_email}` : 'Du wurdest eingeladen!'}
             </p>
@@ -266,7 +320,7 @@ const InviteHandler: React.FC<InviteHandlerProps> = ({
             <button
               type="submit"
               disabled={authLoading}
-              className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-indigo-600 transition-all disabled:opacity-50"
+              className="w-full px-6 py-3 font-semibold text-white transition-all bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl hover:from-blue-600 hover:to-indigo-600 disabled:opacity-50"
             >
               {authLoading ? 'Verarbeitung...' : (isLogin ? 'Anmelden' : 'Registrieren')}
             </button>
@@ -275,14 +329,14 @@ const InviteHandler: React.FC<InviteHandlerProps> = ({
           <div className="mt-6 text-center">
             <button
               onClick={() => setIsLogin(!isLogin)}
-              className="text-blue-600 hover:text-blue-800 font-medium"
+              className="font-medium text-blue-600 hover:text-blue-800"
             >
               {isLogin ? 'Kein Account? Registrieren' : 'Account vorhanden? Anmelden'}
             </button>
           </div>
           
           {message && (
-            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-xl">
+            <div className="p-3 mt-4 border border-blue-200 bg-blue-50 rounded-xl">
               <p className="text-sm text-blue-800">{message}</p>
             </div>
           )}
@@ -290,7 +344,7 @@ const InviteHandler: React.FC<InviteHandlerProps> = ({
           <div className="mt-6 text-center">
             <button 
               onClick={onCompleted}
-              className="text-gray-500 hover:text-gray-700 text-sm"
+              className="text-sm text-gray-500 hover:text-gray-700"
             >
               Später einlösen →
             </button>
@@ -302,25 +356,25 @@ const InviteHandler: React.FC<InviteHandlerProps> = ({
 
   // Show ready state
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl p-8 shadow-xl max-w-md w-full text-center">
-        <div className="text-6xl mb-6">🤝</div>
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Freundeseinladung</h2>
-        <p className="text-gray-600 mb-6">
+    <div className="flex items-center justify-center min-h-screen p-4 bg-gradient-to-br from-blue-50 to-indigo-50">
+      <div className="w-full max-w-md p-8 text-center bg-white shadow-xl rounded-3xl">
+        <div className="mb-6 text-6xl">🤝</div>
+        <h2 className="mb-4 text-xl font-bold text-gray-900">Freundeseinladung</h2>
+        <p className="mb-6 text-gray-600">
           Du wurdest eingeladen! {user ? 'Einladung annehmen?' : 'Melde dich an um die Einladung anzunehmen.'}
         </p>
         
         {user ? (
           <button 
             onClick={() => acceptInvite()}
-            className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-indigo-600 transition-all"
+            className="w-full px-6 py-3 font-semibold text-white transition-all bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl hover:from-blue-600 hover:to-indigo-600"
           >
             Einladung annehmen
           </button>
         ) : (
           <button 
             onClick={() => setShowAuth(true)}
-            className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-indigo-600 transition-all"
+            className="w-full px-6 py-3 font-semibold text-white transition-all bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl hover:from-blue-600 hover:to-indigo-600"
           >
             Anmelden / Registrieren
           </button>
@@ -328,7 +382,7 @@ const InviteHandler: React.FC<InviteHandlerProps> = ({
         
         <button 
           onClick={onCompleted}
-          className="w-full mt-3 bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-semibold transition-all"
+          className="w-full px-6 py-3 mt-3 font-semibold text-gray-700 transition-all bg-gray-100 hover:bg-gray-200 rounded-xl"
         >
           Später
         </button>

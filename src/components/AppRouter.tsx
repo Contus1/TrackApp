@@ -4,7 +4,6 @@ import type { User } from '@supabase/supabase-js';
 import LandingPage from '../pages/landing';
 import DashboardPage from '../pages/dashboard';
 import AuthPage from '../pages/auth';
-import InviteHandler from '../components/InviteHandler';
 
 // Simple Router für die TrackApp
 const AppRouter: React.FC = () => {
@@ -21,13 +20,14 @@ const AppRouter: React.FC = () => {
     const detectRoute = () => {
       const path = window.location.pathname;
       
+      // Remove old invite routes - redirect to dashboard
       if (path.startsWith('/invite/')) {
-        const token = path.split('/invite/')[1];
-        setCurrentRoute({
-          path: '/invite',
-          params: { token }
-        });
-      } else if (path === '/friends') {
+        setCurrentRoute({ path: '/' });
+        window.history.replaceState({}, '', '/');
+        return;
+      }
+      
+      if (path === '/friends') {
         setCurrentRoute({ path: '/friends' });
       } else if (path.startsWith('/friend/')) {
         const friendId = path.split('/friend/')[1];
@@ -100,15 +100,6 @@ const AppRouter: React.FC = () => {
 
   // Route Rendering
   switch (currentRoute.path) {
-    case '/invite':
-      return (
-        <InviteHandler
-          token={currentRoute.params?.token || ''}
-          user={user}
-          onCompleted={() => navigate('/')}
-        />
-      );
-
     case '/friends':
     case '/friend':
       if (!user) {

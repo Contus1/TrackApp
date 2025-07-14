@@ -22,10 +22,10 @@ const StreakDisplay: React.FC<StreakDisplayProps> = ({ currentStreak, isLoading 
   };
 
   return (
-    <div className="bg-gradient-to-br from-orange-400 via-red-500 to-pink-600 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden mobile-card">
+    <div className="relative p-6 overflow-hidden text-white shadow-xl bg-gradient-to-br from-orange-400 via-red-500 to-pink-600 rounded-2xl mobile-card">
       {/* Background pattern for premium look */}
       <div className="absolute inset-0 bg-white opacity-5 rounded-2xl"></div>
-      <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full -translate-y-16 translate-x-16"></div>
+      <div className="absolute top-0 right-0 w-32 h-32 translate-x-16 -translate-y-16 bg-white rounded-full opacity-5"></div>
       
       <div className="relative z-10">
         <div className="flex items-center justify-center space-x-4 sm:space-x-6">
@@ -38,7 +38,7 @@ const StreakDisplay: React.FC<StreakDisplayProps> = ({ currentStreak, isLoading 
                 className="drop-shadow-lg"
               />
             ) : (
-              <div className="w-8 h-10 sm:w-12 sm:h-16 flex items-center justify-center">
+              <div className="flex items-center justify-center w-8 h-10 sm:w-12 sm:h-16">
                 <span className="text-3xl sm:text-4xl opacity-60">🔥</span>
               </div>
             )}
@@ -47,15 +47,15 @@ const StreakDisplay: React.FC<StreakDisplayProps> = ({ currentStreak, isLoading 
           <div className="text-center">
             {isLoading ? (
               <div className="animate-pulse">
-                <div className="h-10 w-20 bg-white bg-opacity-30 rounded-xl mb-2"></div>
-                <div className="h-5 w-24 bg-white bg-opacity-30 rounded-lg"></div>
+                <div className="w-20 h-10 mb-2 bg-white bg-opacity-30 rounded-xl"></div>
+                <div className="w-24 h-5 bg-white rounded-lg bg-opacity-30"></div>
               </div>
             ) : (
               <>
-                <div className="text-4xl sm:text-5xl font-bold tracking-tight mb-1">
+                <div className="mb-1 text-4xl font-bold tracking-tight sm:text-5xl">
                   {currentStreak}
                 </div>
-                <div className="text-sm sm:text-base opacity-90 font-medium">
+                <div className="text-sm font-medium sm:text-base opacity-90">
                   {currentStreak === 1 ? 'Day' : 'Days'} Streak
                 </div>
               </>
@@ -64,11 +64,19 @@ const StreakDisplay: React.FC<StreakDisplayProps> = ({ currentStreak, isLoading 
         </div>
         
         {!isLoading && (
-          <div className="mt-6 text-center text-sm sm:text-base opacity-90 font-medium">
-            {currentStreak === 0 && "Light your fire! Start today! �"}
+          <div className="mt-6 text-sm font-medium text-center sm:text-base opacity-90">
+            {currentStreak === 0 && "Light your fire! Start today! 🚀"}
             {currentStreak > 0 && currentStreak < 7 && "Building momentum! 🌟"}
             {currentStreak >= 7 && currentStreak < 30 && "Blazing hot! Keep burning! 🔥"}
             {currentStreak >= 30 && "Unstoppable force! 👑"}
+          </div>
+        )}
+        
+        {/* Streak Rules Info */}
+        {!isLoading && (
+          <div className="mt-4 text-xs text-center opacity-75">
+            <p>🏆 One activity per day = one flame</p>
+            <p>⚠️ Streak breaks after 3 days of inactivity</p>
           </div>
         )}
       </div>

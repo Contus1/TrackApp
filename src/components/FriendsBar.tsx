@@ -5,14 +5,14 @@ interface FriendsBarProps {
   friends: FriendWithStreak[];
   isLoading?: boolean;
   onFriendClick: (friend: FriendWithStreak) => void;
-  onInviteFriend: () => void;
+  onManageFriends: () => void;
 }
 
 const FriendsBar: React.FC<FriendsBarProps> = ({ 
   friends, 
   isLoading = false, 
   onFriendClick, 
-  onInviteFriend
+  onManageFriends
 }) => {
   // Zeige maximal 6 Freunde an
   const displayFriends = friends.slice(0, 6);
@@ -45,10 +45,10 @@ const FriendsBar: React.FC<FriendsBarProps> = ({
           Friends {friends.length > 0 && `(${friends.length})`}
         </h3>
         <button
-          onClick={onInviteFriend}
+          onClick={onManageFriends}
           className="px-4 py-2 text-sm bg-gradient-to-r from-orange-100 to-red-100 text-orange-700 rounded-full hover:from-orange-200 hover:to-red-200 transition-all duration-200 font-medium"
         >
-          Invite
+          Manage
         </button>
       </div>
 
@@ -57,10 +57,10 @@ const FriendsBar: React.FC<FriendsBarProps> = ({
           <div className="text-3xl mb-2">👥</div>
           <p className="text-sm">No friends added yet</p>
           <button 
-            onClick={onInviteFriend}
+            onClick={onManageFriends}
             className="mt-3 text-orange-600 text-sm hover:text-orange-700 font-medium"
           >
-            Invite friends
+            Add friends
           </button>
         </div>
       ) : (

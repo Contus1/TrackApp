@@ -126,11 +126,43 @@ export const friendshipService = {
 
   // Freunde mit ihren aktuellen Streaks
   async getFriendsWithStreaks(userId: string): Promise<{ data: FriendWithStreak[] | null; error: unknown }> {
-    const { data, error } = await supabase.rpc('get_friends_with_streaks', {
-      p_user_id: userId
-    });
-    
-    return { data, error };
+    try {
+      // Get friends from friends_simple view
+      const { data: friendsData, error: friendsError } = await supabase
+        .from('friends_simple')
+        .select('*')
+        .eq('user_id', userId);
+      
+      if (friendsError) {
+        return { data: null, error: friendsError };
+      }
+
+      // Get current streaks for all friends
+      const friendsWithStreaks: FriendWithStreak[] = [];
+      
+      for (const friend of friendsData || []) {
+        // Get the actual current streak for this friend
+        const { data: streakData } = await supabase
+          .from('user_current_streaks')
+          .select('current_streak')
+          .eq('user_id', friend.friend_id)
+          .single();
+        
+        friendsWithStreaks.push({
+          id: friend.friend_id || '',
+          display_name: friend.friend_name || `Friend ${friend.friend_code}` || 'Friend',
+          email: '', // Not available in friends_simple view
+          avatar_url: friend.friend_avatar || undefined,
+          current_streak: streakData?.current_streak || 0,
+          friendship_status: 'accepted' as const,
+          created_at: friend.friendship_created
+        });
+      }
+
+      return { data: friendsWithStreaks, error: null };
+    } catch (error) {
+      return { data: null, error };
+    }
   },
 
   // Freundschaftsanfrage senden

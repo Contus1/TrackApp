@@ -77,22 +77,13 @@ export interface ComparisonData {
   }>;
 }
 
-// Extended Friends interfaces with Deep Link Support
-// Note: These may need to be updated to match actual schema
+// Extended Friends interfaces
 export interface Friend {
   id: string;
-  inviter_id: string;
-  invitee_id?: string;
-  invitee_email?: string;
-  invite_token?: string;
-  status: 'pending' | 'connected' | 'declined';
+  user_id: string;
+  friend_id: string;
+  status: 'pending' | 'accepted' | 'declined';
   created_at: string;
-  connected_at?: string;
-}
-
-export interface FriendInvite {
-  invitee_email: string;
-  invite_message?: string;
 }
 
 export interface FriendWithProfile {
@@ -103,12 +94,6 @@ export interface FriendWithProfile {
   friend_avatar: string;
   friend_streak: number;
   connected_at: string;
-}
-
-export interface InviteLink {
-  token: string;
-  url: string;
-  expires_at?: string;
 }
 
 export interface StreakComparison {

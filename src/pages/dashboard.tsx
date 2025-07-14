@@ -10,7 +10,6 @@ import StreakForm from '../components/StreakForm';
 import StreakDisplay from '../components/StreakDisplay';
 import FriendsBar from '../components/FriendsBar';
 import TimelineGraph from '../components/TimelineGraph';
-import SimpleInvite from '../components/SimpleInvite';
 import FriendProfile from '../components/FriendProfile';
 import AIAdvisor from '../components/AIAdvisor';
 import QuickAIInsight from '../components/QuickAIInsight';
@@ -18,6 +17,7 @@ import ProfilePage from './profile';
 import NotificationSetup from '../components/NotificationSetup';
 import NotificationList from '../components/NotificationList';
 import PWAInstallPrompt from '../components/PWAInstallPrompt';
+import SimpleFriends from '../components/SimpleFriends';
 
 interface DashboardPageProps {
   onLogout: () => void;
@@ -87,63 +87,43 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onLogout, user }) => {
     try {
       setLoading(prev => ({ ...prev, friends: true }));
       
-      // Hole alle verbundenen Freunde direkt aus der friends-Tabelle
+      // Use the friends_simple view for basic friend data
       const { data: friendsData, error } = await supabase
-        .from('friends')
+        .from('friends_simple')
         .select('*')
-        .eq('status', 'connected')
-        .or(`inviter_id.eq.${user.id},invitee_id.eq.${user.id}`);
+        .eq('user_id', user.id);
       
       if (error) {
         console.error('Error loading friends:', error);
+        setFriends([]);
       } else {
-        // Sammle alle Freunde-IDs
-        const friendIds = (friendsData || []).map(friendship => 
-          friendship.inviter_id === user.id ? friendship.invitee_id : friendship.inviter_id
-        );
+        // Get current streaks for all friends
+        const friendsWithStreaks: FriendWithStreak[] = [];
         
-        // Hole Benutzerdaten für alle Freunde aus der profiles Tabelle
-        const { data: profilesData, error: profilesError } = await supabase
-          .from('profiles')
-          .select('id, display_name')
-          .in('id', friendIds);
-        
-        // Hole auch E-Mail-Daten falls Profile nicht vollständig sind
-        const { data: usersData, error: usersError } = await supabase
-          .from('users')
-          .select('id, email, created_at')
-          .in('id', friendIds);
-        
-        if (profilesError) {
-          console.error('Error loading profiles data:', profilesError);
-        }
-        if (usersError) {
-          console.error('Error loading user data:', usersError);
-        }
-        
-        // Konvertiere zu FriendWithStreak Format
-        const friendsWithStreaks: FriendWithStreak[] = (friendsData || []).map(friendship => {
-          const friendId = friendship.inviter_id === user.id ? friendship.invitee_id : friendship.inviter_id;
-          const friendUser = usersData?.find(u => u.id === friendId);
-          const friendProfile = profilesData?.find(p => p.id === friendId);
+        for (const friend of friendsData || []) {
+          // Get the actual current streak for this friend
+          const { data: streakData } = await supabase
+            .from('user_current_streaks')
+            .select('current_streak')
+            .eq('user_id', friend.friend_id)
+            .single();
           
-          return {
-            id: friendId || '',
-            display_name: friendProfile?.display_name || friendUser?.email?.split('@')[0] || 'Freund',
-            email: friendUser?.email || '',
-            avatar_url: undefined,
-            current_streak: 0,
-            max_streak: 0,
-            last_activity: friendship.connected_at,
+          friendsWithStreaks.push({
+            id: friend.friend_id || '',
+            display_name: friend.friend_name || `Friend ${friend.friend_code}` || 'Friend',
+            email: '', // Not available in friends_simple view
+            avatar_url: friend.friend_avatar || undefined,
+            current_streak: streakData?.current_streak || 0,
             friendship_status: 'accepted' as const,
-            created_at: friendship.connected_at
-          };
-        });
+            created_at: friend.friendship_created
+          });
+        }
         
         setFriends(friendsWithStreaks);
       }
     } catch (err) {
       console.error('Friends loading failed:', err);
+      setFriends([]);
     } finally {
       setLoading(prev => ({ ...prev, friends: false }));
     }
@@ -227,7 +207,6 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onLogout, user }) => {
   };
 
   const handleFriendClick = (friend: FriendWithStreak) => {
-    console.log('Friend clicked:', friend);
     setSelectedFriend(friend);
   };
 
@@ -296,20 +275,20 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onLogout, user }) => {
   // Loading state
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white flex items-center justify-center">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-white">
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-orange-500 via-red-500 to-yellow-500 mb-6">
+          <div className="inline-flex items-center justify-center w-16 h-16 mb-6 rounded-full bg-gradient-to-br from-orange-500 via-red-500 to-yellow-500">
             <span className="text-2xl">🔥</span>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          <h2 className="mb-4 text-2xl font-bold text-gray-900">
             Not logged in
           </h2>
-          <p className="text-gray-600 mb-6">
+          <p className="mb-6 text-gray-600">
             Please log in to track your workouts.
           </p>
           <button
             onClick={onLogout}
-            className="px-6 py-3 bg-gradient-to-r from-orange-500 via-red-500 to-orange-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+            className="px-6 py-3 font-semibold text-white transition-all duration-200 transform shadow-lg bg-gradient-to-r from-orange-500 via-red-500 to-orange-600 rounded-2xl hover:shadow-xl hover:scale-105"
           >
             Go to Login
           </button>
@@ -345,12 +324,12 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onLogout, user }) => {
       <DashboardHeader user={user} onLogout={onLogout} onProfileClick={handleProfileClick} />
       
       <main className="pb-20 safe-bottom">
-        <div className="mobile-container space-y-6 sm:space-y-8">
+        <div className="space-y-6 mobile-container sm:space-y-8">
           {/* Floating Action Buttons - Mobile First */}
-          <div className="flex justify-center items-center space-x-4 sm:space-x-6 pt-4">
+          <div className="flex items-center justify-center pt-4 space-x-4 sm:space-x-6">
             <button
               onClick={() => setShowForm(true)}
-              className="w-16 h-16 sm:w-18 sm:h-18 bg-gradient-to-br from-orange-500 via-red-500 to-pink-600 hover:from-orange-600 hover:via-red-600 hover:to-pink-700 rounded-2xl flex items-center justify-center text-white text-2xl sm:text-3xl font-bold shadow-xl hover:shadow-2xl transform hover:scale-110 active:scale-95 transition-all duration-200 mobile-btn"
+              className="flex items-center justify-center w-16 h-16 text-2xl font-bold text-white transition-all duration-200 transform shadow-xl sm:w-18 sm:h-18 bg-gradient-to-br from-orange-500 via-red-500 to-pink-600 hover:from-orange-600 hover:via-red-600 hover:to-pink-700 rounded-2xl sm:text-3xl hover:shadow-2xl hover:scale-110 active:scale-95 mobile-btn"
               aria-label="Add workout"
             >
               +
@@ -358,7 +337,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onLogout, user }) => {
             
             <button
               onClick={handleShowAIAdvisor}
-              className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-600 hover:from-indigo-600 hover:via-purple-600 hover:to-blue-700 rounded-2xl flex items-center justify-center text-white text-xl sm:text-2xl shadow-xl hover:shadow-2xl transform hover:scale-110 active:scale-95 transition-all duration-200"
+              className="flex items-center justify-center text-xl text-white transition-all duration-200 transform shadow-xl w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-600 hover:from-indigo-600 hover:via-purple-600 hover:to-blue-700 rounded-2xl sm:text-2xl hover:shadow-2xl hover:scale-110 active:scale-95"
               title="AI Training Coach"
               aria-label="Open AI Coach"
             >
@@ -367,7 +346,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onLogout, user }) => {
           </div>
 
           {/* Current Streak Display - Enhanced */}
-          <div className="glass rounded-3xl p-1 shadow-xl">
+          <div className="p-1 shadow-xl glass rounded-3xl">
             <StreakDisplay 
               currentStreak={currentStreak} 
               isLoading={loading.streak} 
@@ -381,23 +360,23 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onLogout, user }) => {
           />
 
           {/* Friends Section - Enhanced */}
-          <div className="bg-white rounded-3xl p-4 sm:p-6 shadow-lg border border-gray-100 mobile-card">
+          <div className="p-4 bg-white border border-gray-100 shadow-lg rounded-3xl sm:p-6 mobile-card">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg sm:text-xl font-bold text-gray-900">Training Partners</h3>
+              <h3 className="text-lg font-bold text-gray-900 sm:text-xl">Training Partners</h3>
               <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
             </div>
             <FriendsBar
               friends={friends}
               isLoading={loading.friends}
               onFriendClick={handleFriendClick}
-              onInviteFriend={handleInviteFriend}
+              onManageFriends={handleInviteFriend}
             />
           </div>
 
           {/* Timeline Graph - Enhanced */}
-          <div className="bg-white rounded-3xl p-4 sm:p-6 shadow-lg border border-gray-100 mobile-card">
+          <div className="p-4 bg-white border border-gray-100 shadow-lg rounded-3xl sm:p-6 mobile-card">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg sm:text-xl font-bold text-gray-900">Your Progress</h3>
+              <h3 className="text-lg font-bold text-gray-900 sm:text-xl">Your Progress</h3>
               <div className="flex items-center space-x-1">
                 <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
                 <span className="text-xs text-gray-500">Last 30 days</span>
@@ -411,44 +390,44 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onLogout, user }) => {
           </div>
 
           {/* Features Grid - Mobile First */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
             {/* Notification Setup */}
-            <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-lg border border-gray-100 mobile-card">
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center">
-                  <span className="text-white text-lg">🔔</span>
+            <div className="p-4 bg-white border border-gray-100 shadow-lg rounded-2xl sm:p-5 mobile-card">
+              <div className="flex items-center mb-4 space-x-3">
+                <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl">
+                  <span className="text-lg text-white">🔔</span>
                 </div>
-                <h3 className="text-base sm:text-lg font-bold text-gray-900">Notifications</h3>
+                <h3 className="text-base font-bold text-gray-900 sm:text-lg">Notifications</h3>
               </div>
               <NotificationSetup />
             </div>
 
             {/* PWA Install Prompt */}
-            <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-lg border border-gray-100 mobile-card">
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center">
-                  <span className="text-white text-lg">📱</span>
+            <div className="p-4 bg-white border border-gray-100 shadow-lg rounded-2xl sm:p-5 mobile-card">
+              <div className="flex items-center mb-4 space-x-3">
+                <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl">
+                  <span className="text-lg text-white">📱</span>
                 </div>
-                <h3 className="text-base sm:text-lg font-bold text-gray-900">Install App</h3>
+                <h3 className="text-base font-bold text-gray-900 sm:text-lg">Install App</h3>
               </div>
               <PWAInstallPrompt />
             </div>
           </div>
 
           {/* Recent Notifications - Full Width */}
-          <div className="bg-white rounded-3xl p-4 sm:p-6 shadow-lg border border-gray-100 mobile-card">
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center">
-                <span className="text-white text-lg">📋</span>
+          <div className="p-4 bg-white border border-gray-100 shadow-lg rounded-3xl sm:p-6 mobile-card">
+            <div className="flex items-center mb-4 space-x-3">
+              <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl">
+                <span className="text-lg text-white">📋</span>
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-gray-900">Recent Activity</h3>
+              <h3 className="text-lg font-bold text-gray-900 sm:text-xl">Recent Activity</h3>
             </div>
             <NotificationList />
           </div>
 
           {/* Error Display - Enhanced */}
           {error && (
-            <div className="bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 text-red-800 px-4 py-4 rounded-2xl shadow-lg mobile-card">
+            <div className="px-4 py-4 text-red-800 border border-red-200 shadow-lg bg-gradient-to-r from-red-50 to-pink-50 rounded-2xl mobile-card">
               <div className="flex items-center space-x-2">
                 <span className="text-red-500">⚠️</span>
                 <span className="font-medium">{error}</span>
@@ -462,8 +441,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onLogout, user }) => {
 
       {/* Enhanced Modals */}
       {showForm && user && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-end sm:items-center justify-center p-0 sm:p-4 z-50 backdrop-blur-sm">
-          <div className="bg-white rounded-t-3xl sm:rounded-3xl p-6 w-full sm:max-w-md shadow-2xl border-t border-gray-100 sm:border">
+        <div className="fixed inset-0 z-50 flex items-end justify-center p-0 bg-black bg-opacity-60 sm:items-center sm:p-4 backdrop-blur-sm">
+          <div className="w-full p-6 bg-white border-t border-gray-100 shadow-2xl rounded-t-3xl sm:rounded-3xl sm:max-w-md sm:border">
             <StreakForm
               onSubmit={handleAddStreak}
               onCancel={() => setShowForm(false)}
@@ -475,12 +454,25 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onLogout, user }) => {
       )}
 
       {showInvite && user && (
-        <SimpleInvite
-          user={user}
-          onClose={() => setShowInvite(false)}
-        />
+        <div className="fixed inset-0 z-50 flex items-end justify-center p-0 bg-black bg-opacity-60 sm:items-center sm:p-4">
+          <div className="w-full max-h-[95vh] overflow-y-auto bg-white shadow-2xl rounded-t-3xl sm:rounded-3xl sm:max-w-2xl sm:max-h-[90vh]">
+            <div className="p-4 sm:p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-gray-900 sm:text-xl">Friends System</h3>
+                <button
+                  onClick={() => setShowInvite(false)}
+                  className="p-2 text-gray-400 transition-colors hover:text-gray-600 rounded-xl"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <SimpleFriends user={user} onFriendsChange={loadFriendsData} />
+            </div>
+          </div>
+        </div>
       )}
-
       {showAIAdvisor && user && (
         <AIAdvisor
           streaks={recentStreaks}
