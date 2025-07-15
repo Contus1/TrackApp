@@ -1,1 +1,0 @@
-# TrackApp - Clean React Project
