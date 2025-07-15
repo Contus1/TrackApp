@@ -126,8 +126,8 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin, onBack }) => {
                 <div className="bg-orange-500/20 border border-orange-400/30 rounded-2xl p-4 mb-6 text-left">
                   <h3 className="font-semibold text-orange-300 mb-2">Missing Environment Variables:</h3>
                   <ul className="text-sm text-orange-200 space-y-1">
-                    <li>• VITE_SUPABASE_URL</li>
-                    <li>• VITE_SUPABASE_ANON_KEY</li>
+                    <li>• REACT_APP_SUPABASE_URL</li>
+                    <li>• REACT_APP_SUPABASE_ANON_KEY</li>
                   </ul>
                 </div>
 

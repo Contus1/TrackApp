@@ -1,215 +1,52 @@
-# Tr## Features
+# 🏃‍♂️ TrackApp
 
-- 🏃‍♂️ Track workouts (Gym, Running, Yoga, etc.)
-- 🔥 Streak system with 3-day rule
-- 👥 Invite friends and compare progress
-- 🗑️ **NEW: Remove friends** - Remove wrong accounts or inactive friends from your list
-- 🤖 **NEW: AI Training Coach** - Get personalized feedback and recommendations based on your training data
-- 📱 **Progressive Web App (PWA)** - Install on your phone's home screen
-- 🔔 **Push notifications** - Send motivation messages to friends who haven't been training
-- 💪 Friend profiles with 7-day activity timelines
-- 📊 Personal timeline visualization
-- 🎯 Profile management with display names
-- 🌐 **Offline support** - Works without internet connection
-- 🚀 **Native app experience** - Full-screen, app-like interfacepersonal fitness tracking app that helps you track your training streaks and stay motivated with friends.
+A modern fitness tracking PWA built with React, TypeScript, and Tailwind CSS.
 
-## Features
+## 🚀 Features
 
-- 🏃‍♂️ Track workouts (Gym, Running, Yoga, etc.)
-- 🔥 Streak system with 3-day rule
-- 👥 Invite friends and compare progress
-- 📱 Mobile-first design for on-the-go tracking
-- � **NEW: Push notifications** - Send motivation messages to friends who haven't been training
-- 💪 Friend profiles with 7-day activity timelines
-- 📊 Personal timeline visualization
-- 🎯 Profile management with display names
+- 📱 Progressive Web App (PWA)
+- 🔥 Streak tracking
+- 👫 Friends system
+- 📊 Mood & training tracking
+- 🔔 Push notifications
+- 🎨 Beautiful UI with Tailwind CSS
 
-## Progressive Web App (PWA)
+## 🛠️ Tech Stack
 
-TrackApp is a fully functional Progressive Web App that can be installed on your device:
+- **Frontend**: React 18 + TypeScript
+- **Styling**: Tailwind CSS
+- **Backend**: Supabase
+- **Deployment**: DigitalOcean App Platform
 
-### Installation:
-1. **Open TrackApp** in Chrome, Firefox, or Safari
-2. **Look for the install prompt** in the dashboard
-3. **Click "Install Now"** to add it to your home screen
-4. **Launch like a native app** from your home screen
-
-### PWA Features:
-- **📱 Home screen icon** - Launch from your device's home screen
-- **🌐 Offline support** - Continue using core features without internet
-- **⚡ Fast loading** - Cached resources for instant startup
-- **🔔 Push notifications** - Receive motivation messages even when app is closed
-- **📲 Native experience** - Full-screen, app-like interface
-- **🔄 Auto-updates** - Seamless updates in the background
-
-### Device Support:
-- ✅ **iPhone/iPad** - iOS 11.3+
-- ✅ **Android** - Chrome 42+
-- ✅ **Desktop** - Chrome, Firefox, Edge
-
-The app now includes a friend motivation system:
-
-- **Automatic Detection**: The app detects when friends haven't trained for 2+ days
-- **Quick Motivation**: Send instant motivational push notifications to inactive friends
-- **Custom Messages**: Write personalized motivational messages
-- **Real-time Notifications**: Friends receive push notifications directly in their browser
-- **Notification History**: View all received motivational messages
-
-### How it works:
-
-1. Enable push notifications in your dashboard
-2. View friend profiles to see their activity status
-3. If a friend hasn't trained in 2+ days, you'll see a "Send Motivation" button
-4. Choose between quick motivation or custom messages
-5. Friend receives an instant push notification to get back to training!
-
-## 🤖 AI Training Coach
-
-The AI Training Coach analyzes your workout data and provides personalized insights:
-
-### **What it analyzes:**
-- **Training frequency** - How often you work out per week
-- **Mood patterns** - How you feel during and after workouts
-- **Sport variety** - Diversity in your training routine
-- **Consistency** - Your streak patterns and regularity
-- **Recent performance** - Your activity in the past week
-
-### **What you get:**
-- **Overall fitness score** (0-100) based on multiple factors
-- **Personalized recommendations** for improving your routine
-- **Motivational tips** tailored to your current situation
-- **Next goals** to keep you progressing
-- **Quick insights** right on your dashboard
-
-### **How to use:**
-1. **Train regularly** and log your workouts with mood
-2. **Click the 🤖 AI button** next to the add workout button
-3. **Get instant analysis** of your training patterns
-4. **Follow recommendations** to optimize your routine
-
-The AI considers factors like training frequency, mood trends, sport variety, and consistency to give you actionable feedback for better results!
-
-## Setup
-
-To run the project locally:
+## 🏗️ Development
 
 ```bash
 # Install dependencies
 npm install
 
-# Set up environment variables
-cp .env.example .env
-# Add your Supabase configuration to .env
-
-# Set up database
-# 1. Run supabase-setup-fixed.sql in your Supabase SQL editor
-# 2. Run push-notification-setup.sql for push notifications
-# 3. Optionally run fix-existing-users.sql for existing users
-
 # Start development server
-npm run dev
-```
+npm start
 
-## Database Setup
-
-The app requires several SQL files to be run in your Supabase SQL editor:
-
-1. **supabase-setup-fixed.sql** - Main database structure and profiles
-2. **push-notification-setup.sql** - Push notification tables and functions
-3. **fix-existing-users.sql** - Backfill profiles for existing users (optional)
-
-## Tech Stack
-
-- React 18 + TypeScript
-- Tailwind CSS v4 for styling
-- Supabase for backend & authentication
-- Vite as build tool
-- Web Push API for notifications
-- Service Worker for push notification handling
-
-## Deployment
-
-### DigitalOcean App Platform
-
-The app is configured for easy deployment on DigitalOcean App Platform:
-
-1. **Push your code** to a GitHub repository
-2. **Create a new App** on DigitalOcean App Platform
-3. **Connect your GitHub repo** and select the main branch
-4. **DigitalOcean will automatically detect** the Node.js environment
-5. **The app will build and deploy** using the provided configuration
-
-#### Configuration Files:
-- `Procfile` - Tells DigitalOcean how to start the app (`web: node server.js`)
-- `.do/app.yaml` - DigitalOcean App Platform configuration
-- `server.js` - Simple Node.js HTTP server for serving static files with SPA routing
-- `package.json` - Includes `start` script for production (`node server.js`)
-
-#### Environment Variables:
-Set these in your DigitalOcean App Platform environment:
-- `VITE_SUPABASE_URL` - Your Supabase project URL
-- `VITE_SUPABASE_ANON_KEY` - Your Supabase anon/public key
-- `VITE_VAPID_PUBLIC_KEY` - Your VAPID public key for push notifications
-
-**🚨 WICHTIG für DigitalOcean:** 
-Wenn Login "Failed to fetch" zeigt, sind die Supabase Environment Variables nicht gesetzt! 
-Siehe `DIGITALOCEAN_SETUP.md` für detaillierte Anweisungen.
-
-#### Deployment Process:
-1. **Node.js environment** is automatically detected
-2. **Dependencies** are installed (`npm install`)
-3. **Production build** is created (`npm run build`)
-4. **HTTP server** starts serving static files (`node server.js` on port 8080)
-5. **Health checks** verify the app is running on port 8080
-
-#### Troubleshooting Deployment:
-If deployment fails, check these common issues:
-
-1. **Missing start command**: Ensure `package.json` has a `start` script
-2. **Port binding**: The server must listen on `0.0.0.0:$PORT` (not just `localhost`)
-3. **Build errors**: Check build logs for TypeScript or dependency issues
-4. **Environment variables**: Ensure all required environment variables are set
-5. **Health check failures**: The server must respond to HTTP requests on the configured port
-
-The current setup uses a simple Node.js HTTP server that properly binds to `0.0.0.0:8080` and handles SPA routing.
-
-### Other Deployment Options
-
-**Netlify:**
-```bash
+# Build for production
 npm run build
-# Deploy the `dist` folder
+
+# Serve production build
+npm run serve
 ```
 
-**Vercel:**
+## 🌐 Environment Variables
+
+Copy `.env.example` to `.env` and add your Supabase credentials:
+
 ```bash
-npm run build  
-# Deploy the `dist` folder
+REACT_APP_SUPABASE_URL=your_supabase_url
+REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-**Static Hosting:**
-The app builds to static files that can be served from any web server or CDN.
+## 📱 PWA Installation
 
-## Files Overview
-
-### Core Components
-- `src/pages/dashboard.tsx` - Main dashboard with streaks and friends
-- `src/components/FriendProfile.tsx` - Friend profile with motivation features
-- `src/components/NotificationSetup.tsx` - Push notification setup
-- `src/components/NotificationList.tsx` - Display received notifications
-
-### Services
-- `src/services/notificationService.ts` - Handle push notifications
-- `src/services/supabase.ts` - Supabase client configuration
-- `src/services/streakService.ts` - Workout streak management
-
-### Database
-- `push-notification-setup.sql` - Notification system setup
-- `supabase-setup-fixed.sql` - Main database structure
-- `public/sw.js` - Service worker for push notifications
+The app can be installed on any device as a Progressive Web App for a native-like experience.
 
 ---
 
-*A project by Carl Lichtl*
-
-# Force redeploy with env vars Fri Jul 11 20:50:56 CEST 2025
+**Made with ❤️ by Carl Lichtl**
