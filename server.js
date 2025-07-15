@@ -3,6 +3,7 @@ import { readFileSync, existsSync } from 'fs';
 import { join, extname } from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { gzip } from 'zlib';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -31,8 +32,23 @@ const mimeTypes = {
   '.map': 'application/json'
 };
 
+// Helper function for compression
+const compressResponse = (content, encoding, callback) => {
+  if (encoding && encoding.includes('gzip')) {
+    gzip(content, callback);
+  } else {
+    callback(null, content, false);
+  }
+};
+
 const server = createServer((req, res) => {
   console.log(`Request: ${req.method} ${req.url}`);
+  
+  // Security headers
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   
   // Parse URL to remove query parameters
   const urlPath = req.url.split('?')[0];
@@ -48,13 +64,33 @@ const server = createServer((req, res) => {
   if (isSPARoute && !isAssetRequest) {
     console.log(`SPA route detected: ${urlPath}, serving index.html`);
     const filePath = join(distDir, 'index.html');
+
     try {
       const content = readFileSync(filePath);
-      res.writeHead(200, { 
-        'Content-Type': 'text/html',
-        'Cache-Control': 'no-cache'
+      const acceptEncoding = req.headers['accept-encoding'] || '';
+      
+      compressResponse(content, acceptEncoding, (err, compressedContent, isCompressed) => {
+        if (err) {
+          console.error('Compression error:', err);
+          res.writeHead(500, { 'Content-Type': 'text/plain' });
+          res.end('Internal Server Error');
+          return;
+        }
+        
+        const headers = { 
+          'Content-Type': 'text/html',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        };
+        
+        if (isCompressed) {
+          headers['Content-Encoding'] = 'gzip';
+        }
+        
+        res.writeHead(200, headers);
+        res.end(compressedContent);
       });
-      res.end(content);
       return;
     } catch (error) {
       console.error(`Error serving index.html: ${error.message}`);
@@ -90,13 +126,41 @@ const server = createServer((req, res) => {
     const content = readFileSync(filePath);
     const ext = extname(filePath);
     const mimeType = mimeTypes[ext] || 'text/plain';
+    const acceptEncoding = req.headers['accept-encoding'] || '';
+    
+    // Determine cache strategy
+    const isHTML = ext === '.html';
+    const cacheControl = isHTML 
+      ? 'no-cache, no-store, must-revalidate'
+      : 'public, max-age=31536000, immutable';
     
     console.log(`Serving: ${filePath} (${mimeType})`);
-    res.writeHead(200, { 
-      'Content-Type': mimeType,
-      'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=31536000'
+    
+    compressResponse(content, acceptEncoding, (err, compressedContent, isCompressed) => {
+      if (err) {
+        console.error('Compression error:', err);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.end('Internal Server Error');
+        return;
+      }
+      
+      const headers = { 
+        'Content-Type': mimeType,
+        'Cache-Control': cacheControl
+      };
+      
+      if (isCompressed) {
+        headers['Content-Encoding'] = 'gzip';
+      }
+      
+      if (isHTML) {
+        headers['Pragma'] = 'no-cache';
+        headers['Expires'] = '0';
+      }
+      
+      res.writeHead(200, headers);
+      res.end(compressedContent);
     });
-    res.end(content);
   } catch (error) {
     console.error(`Error serving file: ${error.message}`);
     res.writeHead(404, { 'Content-Type': 'text/plain' });
@@ -108,4 +172,6 @@ server.listen(port, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${port}`);
   console.log(`📁 Serving files from: ${distDir}`);
   console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`💾 Cache-Control: HTML=no-cache, Assets=1year`);
+  console.log(`🗜️  Compression: gzip enabled`);
 });

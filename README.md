@@ -18,6 +18,31 @@ A modern fitness tracking PWA built with React, TypeScript, and Tailwind CSS.
 - **Backend**: Supabase
 - **Deployment**: DigitalOcean App Platform
 
+## 🔧 Environment Setup
+
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/Contus1/TrackApp.git
+cd TrackApp
+```
+
+### 2. Environment Variables
+
+```bash
+# Copy environment template
+cp .env.example .env
+
+# Edit .env with your Supabase credentials
+# NEVER commit the real .env file!
+```
+
+### 3. Supabase Setup
+
+1. Create project at [supabase.com](https://supabase.com)
+2. Get your URL and anon key from Settings → API
+3. Add them to your `.env` file
+
 ## 🏗️ Development
 
 ```bash
@@ -32,15 +57,6 @@ npm run build
 
 # Serve production build
 npm run serve
-```
-
-## 🌐 Environment Variables
-
-Copy `.env.example` to `.env` and add your Supabase credentials:
-
-```bash
-REACT_APP_SUPABASE_URL=your_supabase_url
-REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
 ## 📱 PWA Installation
