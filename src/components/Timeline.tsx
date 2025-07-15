@@ -58,15 +58,15 @@ const Timeline: React.FC<TimelineProps> = ({
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-xl p-4 shadow-sm">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Timeline</h3>
+      <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-4 shadow-xl border border-white/20">
+        <h3 className="text-lg font-semibold text-white mb-4">Timeline</h3>
         <div className="space-y-4">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="flex gap-4 animate-pulse">
-              <div className="w-12 h-12 bg-gray-200 rounded-full flex-shrink-0"></div>
+              <div className="w-12 h-12 bg-white/20 rounded-full flex-shrink-0"></div>
               <div className="flex-1">
-                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                <div className="h-4 bg-white/20 rounded w-3/4 mb-2"></div>
+                <div className="h-3 bg-white/20 rounded w-1/2"></div>
               </div>
             </div>
           ))}
@@ -76,11 +76,11 @@ const Timeline: React.FC<TimelineProps> = ({
   }
 
   return (
-    <div className="bg-white rounded-xl p-4 shadow-sm">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Timeline</h3>
+    <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-4 shadow-xl border border-white/20">
+      <h3 className="text-lg font-semibold text-white mb-4">Timeline</h3>
       
       {streaks.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
+        <div className="text-center py-8 text-gray-300">
           <div className="text-3xl mb-2">📅</div>
           <p className="text-sm">Noch keine Trainings-Einträge</p>
           <p className="text-xs text-gray-400 mt-1">
@@ -92,11 +92,11 @@ const Timeline: React.FC<TimelineProps> = ({
           {streaks.map((streak, index) => (
             <div 
               key={streak.id} 
-              className="flex gap-4 group hover:bg-gray-50 p-2 rounded-lg transition-colors"
+              className="flex gap-4 group hover:bg-white/10 p-2 rounded-lg transition-colors"
             >
               {/* Sport Icon */}
               <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center text-white text-xl">
+                <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center text-white text-xl shadow-lg">
                   {getSportEmoji(streak.sport)}
                 </div>
               </div>
@@ -106,13 +106,13 @@ const Timeline: React.FC<TimelineProps> = ({
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="flex items-center gap-2">
-                      <h4 className="font-medium text-gray-900 capitalize">
+                      <h4 className="font-medium text-white capitalize">
                         {streak.sport}
                         {getCategoryText(streak.sport, streak.category)}
                       </h4>
                       <span className="text-lg">{getMoodEmoji(streak.mood)}</span>
                     </div>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="text-sm text-gray-300 mt-1">
                       {formatDate(streak.date)}
                     </p>
                   </div>
@@ -122,7 +122,7 @@ const Timeline: React.FC<TimelineProps> = ({
                     {onEditStreak && (
                       <button
                         onClick={() => onEditStreak(streak)}
-                        className="p-1 text-gray-400 hover:text-primary-600 transition-colors"
+                        className="p-2 text-gray-400 hover:text-orange-400 transition-colors rounded-lg bg-white/10 hover:bg-white/20"
                         title="Bearbeiten"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -133,7 +133,7 @@ const Timeline: React.FC<TimelineProps> = ({
                     {onDeleteStreak && (
                       <button
                         onClick={() => onDeleteStreak(streak.id)}
-                        className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                        className="p-2 text-gray-400 hover:text-red-400 transition-colors rounded-lg bg-white/10 hover:bg-red-500/20"
                         title="Löschen"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -146,7 +146,7 @@ const Timeline: React.FC<TimelineProps> = ({
 
                 {/* Timeline Line */}
                 {index < streaks.length - 1 && (
-                  <div className="absolute left-10 mt-4 w-0.5 h-6 bg-gray-200"></div>
+                  <div className="absolute left-10 mt-4 w-0.5 h-6 bg-white/20"></div>
                 )}
               </div>
             </div>

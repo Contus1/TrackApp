@@ -34,7 +34,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ user, onLogout, onPro
   }, [user.id, user.email]);
 
   return (
-    <header className="bg-white border-b border-gray-100 safe-top shadow-sm">
+    <header className="safe-top bg-gradient-to-r from-purple-900/95 to-blue-900/95 backdrop-blur-xl border-b border-white/10 shadow-2xl">
       <div className="mobile-container py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3 flex-1 min-w-0">
@@ -42,10 +42,10 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ user, onLogout, onPro
               <span className="text-lg sm:text-xl">🔥</span>
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-lg sm:text-xl font-bold text-gray-900 truncate">
+              <h1 className="text-lg sm:text-xl font-bold text-white truncate">
                 Hey, {displayName}!
               </h1>
-              <p className="text-xs sm:text-sm text-gray-600 font-medium">
+              <p className="text-xs sm:text-sm text-white/80 font-medium">
                 Keep the streak going 🚀
               </p>
             </div>

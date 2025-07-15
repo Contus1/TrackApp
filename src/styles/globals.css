@@ -296,3 +296,62 @@ select:focus-visible {
     max-height: 90vh;
   }
 }
+
+/* Mobile-friendly scrollbar hiding */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+/* Mobile form modal specific styles */
+.mobile-form-modal {
+  max-height: 85vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-height: 600px) {
+  .mobile-form-modal {
+    max-height: 95vh;
+  }
+}
+
+/* Enhanced mobile modal improvements for Add Workout form */
+.mobile-form-modal {
+  /* Ensure proper scrolling on mobile */
+  overscroll-behavior: contain;
+  /* Prevent zoom on input focus on iOS */
+  touch-action: pan-y;
+}
+
+.mobile-form-modal select,
+.mobile-form-modal input {
+  /* Prevent zoom on focus for iOS Safari */
+  font-size: 16px;
+}
+
+/* Ensure modals don't get cut off on very small screens */
+@media (max-height: 500px) {
+  .mobile-form-modal {
+    max-height: 95vh;
+    overflow-y: auto;
+  }
+}
+
+/* Prevent background scroll when modal is open */
+body.modal-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+/* Add safe areas for devices with notches */
+@supports (padding: max(0px)) {
+  .mobile-form-modal {
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+}

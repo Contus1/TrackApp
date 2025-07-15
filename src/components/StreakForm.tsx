@@ -44,35 +44,42 @@ const StreakForm: React.FC<StreakFormProps> = ({ onSubmit, onCancel, userId, isL
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold text-gray-900">Add Workout</h2>
-          <button
-            onClick={onCancel}
-            className="text-gray-400 hover:text-gray-600 text-2xl"
-            disabled={isLoading}
-          >
-            ×
-          </button>
-        </div>
+    <div className="w-full">
+      {/* Scroll indicator for mobile */}
+      <div className="hidden max-h-screen-check">
+        <div className="absolute w-12 h-1 transform -translate-x-1/2 rounded-full top-2 left-1/2 bg-white/30 sm:hidden"></div>
+      </div>
+      
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
+        <h2 className="text-xl font-bold text-white sm:text-2xl">Add Workout</h2>
+        <button
+          onClick={onCancel}
+          className="p-3 sm:p-2 text-gray-300 transition-colors hover:text-white rounded-2xl bg-white/10 hover:bg-white/20 min-w-[44px] min-h-[44px] flex items-center justify-center"
+          disabled={isLoading}
+          aria-label="Close"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           {/* Sport Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block mb-2 text-sm font-medium text-white sm:text-base">
               Sport Type *
             </label>
             <select
               value={formData.sport}
               onChange={(e) => handleSportChange(e.target.value as StreakInsert['sport'])}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="w-full p-3 text-white placeholder-gray-300 transition-all duration-200 border sm:p-4 border-white/20 rounded-2xl bg-white/10 backdrop-blur-sm focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/50"
               disabled={isLoading}
               required
             >
-              <option value="">Choose sport...</option>
+              <option value="" className="text-white bg-gray-900">Choose sport...</option>
               {SPORT_OPTIONS.map(option => (
-                <option key={option.value} value={option.value}>
+                <option key={option.value} value={option.value} className="text-white bg-gray-900">
                   {option.label}
                 </option>
               ))}
@@ -82,18 +89,18 @@ const StreakForm: React.FC<StreakFormProps> = ({ onSubmit, onCancel, userId, isL
           {/* Gym Category (only if Gym selected) */}
           {formData.sport === 'gym' && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block mb-2 text-sm font-medium text-white sm:text-base">
                 Body Area
               </label>
               <select
                 value={formData.category || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value as StreakInsert['category'] }))}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full p-3 text-white placeholder-gray-300 transition-all duration-200 border sm:p-4 border-white/20 rounded-2xl bg-white/10 backdrop-blur-sm focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/50"
                 disabled={isLoading}
               >
-                <option value="">Choose body area...</option>
+                <option value="" className="text-white bg-gray-900">Choose body area...</option>
                 {GYM_CATEGORIES.map(option => (
-                  <option key={option.value} value={option.value}>
+                  <option key={option.value} value={option.value} className="text-white bg-gray-900">
                     {option.label}
                   </option>
                 ))}
@@ -103,56 +110,55 @@ const StreakForm: React.FC<StreakFormProps> = ({ onSubmit, onCancel, userId, isL
 
           {/* Mood Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block mb-2 text-sm font-medium text-white sm:text-base">
               How are you feeling? *
             </label>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
               {MOOD_OPTIONS.map(option => (
                 <button
                   key={option.value}
                   type="button"
                   onClick={() => setFormData(prev => ({ ...prev, mood: option.value }))}
-                  className={`p-3 rounded-lg border-2 text-center transition-colors ${
+                  className={`p-3 sm:p-4 rounded-2xl border-2 text-center transition-all duration-200 backdrop-blur-sm ${
                     formData.mood === option.value
-                      ? 'border-primary-500 bg-primary-50 text-primary-700'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-orange-500/70 bg-orange-500/20 text-white shadow-lg shadow-orange-500/30'
+                      : 'border-white/20 bg-white/10 text-white hover:border-white/40 hover:bg-white/20'
                   }`}
                   disabled={isLoading}
                 >
-                  <div className="text-2xl mb-1">{option.emoji}</div>
-                  <div className="text-sm font-medium">{option.value.charAt(0).toUpperCase() + option.value.slice(1)}</div>
+                  <div className="mb-1 text-xl sm:text-2xl">{option.emoji}</div>
+                  <div className="text-xs font-medium sm:text-sm">{option.value.charAt(0).toUpperCase() + option.value.slice(1)}</div>
                 </button>
               ))}
             </div>
           </div>
 
           {/* Submit Buttons */}
-          <div className="flex gap-3 pt-4">
+          <div className="flex flex-col gap-3 pt-4 sm:flex-row sm:pt-6">
             <button
               type="button"
               onClick={onCancel}
-              className="flex-1 px-4 py-3 text-gray-700 bg-gray-100 rounded-2xl hover:bg-gray-200 transition-colors font-medium"
+              className="flex-1 px-4 py-3 font-medium text-white transition-all duration-200 border sm:py-4 bg-white/10 backdrop-blur-sm border-white/20 rounded-2xl hover:bg-white/20"
               disabled={isLoading}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-3 bg-gradient-to-r from-orange-500 via-red-500 to-orange-600 text-white rounded-2xl font-semibold hover:shadow-lg transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
+              className="flex-1 px-4 py-3 font-semibold text-white transition-all duration-200 transform sm:py-4 bg-gradient-to-r from-orange-500 via-red-500 to-orange-600 rounded-2xl hover:shadow-lg hover:shadow-orange-500/30 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               disabled={isLoading || !formData.sport || !formData.mood}
             >
               {isLoading ? (
                 <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  <div className="w-4 h-4 mr-2 border-b-2 border-white rounded-full animate-spin"></div>
                   Saving...
                 </div>
               ) : (
-                'Save'
+                'Save Workout'
               )}
             </button>
           </div>
         </form>
-      </div>
     </div>
   );
 };

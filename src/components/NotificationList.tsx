@@ -70,10 +70,10 @@ const NotificationList: React.FC<NotificationListProps> = ({ onNotificationRead 
 
   if (loading) {
     return (
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-900">Notifications</h3>
-        <div className="flex justify-center py-8">
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-orange-500"></div>
+      <div className="space-y-6">
+        <h3 className="text-xl font-bold text-white">Notifications</h3>
+        <div className="flex justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-orange-400/20 border-t-orange-400"></div>
         </div>
       </div>
     );
@@ -84,21 +84,21 @@ const NotificationList: React.FC<NotificationListProps> = ({ onNotificationRead 
     if (error.includes('relation "public.notifications" does not exist') || 
         error.includes('Failed to load notifications')) {
       return (
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-900">Notifications</h3>
+        <div className="space-y-6">
+          <h3 className="text-xl font-bold text-white">Notifications</h3>
           <DatabaseSetupGuide />
         </div>
       );
     }
     
     return (
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-900">Notifications</h3>
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-4 text-center">
-          <div className="text-red-600 text-sm">{error}</div>
+      <div className="space-y-6">
+        <h3 className="text-xl font-bold text-white">Notifications</h3>
+        <div className="glass-morphism-light rounded-3xl p-6 text-center border border-red-400/20 backdrop-blur-xl">
+          <div className="text-red-300 text-sm mb-4">{error}</div>
           <button
             onClick={loadNotifications}
-            className="mt-3 bg-red-500 text-white py-2 px-4 rounded-xl hover:bg-red-600 transition-colors text-sm"
+            className="magnetic-button bg-gradient-to-r from-red-500 to-pink-600 text-white py-3 px-6 rounded-2xl hover:from-red-400 hover:to-pink-500 transition-all duration-300 text-sm backdrop-blur-xl border border-white/10 shadow-2xl transform hover:scale-105 min-h-[48px]"
           >
             Try Again
           </button>
@@ -109,12 +109,12 @@ const NotificationList: React.FC<NotificationListProps> = ({ onNotificationRead 
 
   if (notifications.length === 0) {
     return (
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-900">Notifications</h3>
-        <div className="bg-gray-50 border border-gray-200 rounded-2xl p-8 text-center">
-          <div className="text-4xl mb-4">🔔</div>
-          <div className="text-gray-600 text-sm">No notifications yet</div>
-          <div className="text-gray-500 text-xs mt-2">
+      <div className="space-y-6">
+        <h3 className="text-xl font-bold text-white">Notifications</h3>
+        <div className="glass-morphism-light rounded-3xl p-8 text-center border border-white/10 backdrop-blur-xl">
+          <div className="text-6xl mb-6 animate-pulse">🔔</div>
+          <div className="text-white/80 text-base font-medium mb-2">No notifications yet</div>
+          <div className="text-white/60 text-sm leading-relaxed">
             Your friends will be able to send you motivational messages when you need them!
           </div>
         </div>
@@ -123,48 +123,52 @@ const NotificationList: React.FC<NotificationListProps> = ({ onNotificationRead 
   }
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-gray-900">Notifications</h3>
-      <div className="space-y-3">
+    <div className="space-y-6">
+      <h3 className="text-xl font-bold text-white">Notifications</h3>
+      <div className="space-y-4">
         {notifications.map((notification) => (
           <div
             key={notification.id}
-            className={`bg-white rounded-2xl p-4 border ${
-              notification.read ? 'border-gray-200' : 'border-orange-200 bg-orange-50'
-            } transition-all duration-200`}
+            className={`glass-morphism-light rounded-3xl p-6 border transition-all duration-300 hover:scale-[1.02] ${
+              notification.read 
+                ? 'border-white/10 backdrop-blur-xl' 
+                : 'border-orange-400/30 bg-gradient-to-br from-orange-500/10 to-red-600/10 backdrop-blur-xl'
+            }`}
           >
-            <div className="flex items-start space-x-3">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold ${
+            <div className="flex items-start space-x-4">
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white font-semibold shrink-0 ${
                 notification.type === 'motivation' 
-                  ? 'bg-gradient-to-br from-orange-400 to-red-600' 
-                  : 'bg-gradient-to-br from-blue-400 to-purple-600'
+                  ? 'bg-gradient-to-br from-orange-400 to-red-600 shadow-lg' 
+                  : 'bg-gradient-to-br from-blue-400 to-purple-600 shadow-lg'
               }`}>
-                {notification.type === 'motivation' ? '💪' : '🔔'}
+                <span className="text-xl">
+                  {notification.type === 'motivation' ? '💪' : '🔔'}
+                </span>
               </div>
               
               <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-semibold text-gray-900 truncate">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-base font-semibold text-white truncate">
                     {notification.title}
                   </h4>
-                  <span className="text-xs text-gray-500 ml-2">
+                  <span className="text-xs text-white/60 ml-4 shrink-0">
                     {formatDate(notification.created_at)}
                   </span>
                 </div>
                 
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-white/80 mb-4 leading-relaxed">
                   {notification.message}
                 </p>
                 
-                <div className="flex items-center justify-between mt-3">
-                  <span className="text-xs text-gray-500">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-white/60">
                     from {notification.sender?.display_name || 'Friend'}
                   </span>
                   
                   {!notification.read && (
                     <button
                       onClick={() => handleMarkAsRead(notification.id)}
-                      className="text-xs text-orange-600 hover:text-orange-700 font-medium"
+                      className="text-xs text-orange-400 hover:text-orange-300 font-medium transition-colors min-h-[32px] px-3 rounded-lg hover:bg-orange-400/10"
                     >
                       Mark as read
                     </button>
