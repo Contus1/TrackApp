@@ -5,8 +5,8 @@ services:
   github:
     branch: main
     deploy_on_push: true
-  build_command: VITE_SUPABASE_URL=https://zbkshutnsojsrjwzullq.supabase.co VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpia3NodXRuc29qc3Jqd3p1bGxxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwMDIzMDksImV4cCI6MjA2NzU3ODMwOX0.G3h5PuawfEi3h3CmH6BQx_TQ24yOW28Pleq1ftjXe-M npm run build
-  run_command: node server.js
+  build_command: npm install && npm run build
+  run_command: npm run serve
   environment_slug: node-js
   instance_count: 1
   instance_size_slug: basic-xxs
@@ -20,7 +20,7 @@ services:
     value: production
   - key: PORT
     value: "8080"
-  # WICHTIG: Diese Werte müssen in der DigitalOcean UI gesetzt werden!
-  # Gehe zu Settings → Environment Variables und füge hinzu:
-  # VITE_SUPABASE_URL=https://dein-projekt-id.supabase.co
-  # VITE_SUPABASE_ANON_KEY=dein_supabase_anon_key_hier
+  - key: REACT_APP_SUPABASE_URL
+    value: https://zbkshutnsojsrjwzullq.supabase.co
+  - key: REACT_APP_SUPABASE_ANON_KEY
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpia3NodXRuc29qc3Jqd3p1bGxxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwMDIzMDksImV4cCI6MjA2NzU3ODMwOX0.G3h5PuawfEi3h3CmH6BQx_TQ24yOW28Pleq1ftjXe-M
