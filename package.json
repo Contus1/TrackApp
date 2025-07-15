@@ -2,6 +2,7 @@
   "name": "trackapp",
   "description": "Meine persönliche Fitness-Tracking-App mit Streak-System",
   "version": "2.0.0",
+  "type": "module",
   "author": "Carl Lichtl",
   "private": true,
   "dependencies": {
