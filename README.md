@@ -1,68 +1,70 @@
-# 🏃‍♂️ TrackApp
+# TrackApp
 
-A modern fitness tracking PWA built with React, TypeScript, and Tailwind CSS.
+A clean, fast, and social fitness tracker built as a modern Progressive Web App (PWA).
 
-## 🚀 Features
+## Overview
 
-- 📱 Progressive Web App (PWA)
-- 🔥 Streak tracking
-- 👫 Friends system
-- 📊 Mood & training tracking
-- 🔔 Push notifications
-- 🎨 Beautiful UI with Tailwind CSS
+TrackApp helps you stay consistent with your training while keeping fitness social and simple. It runs directly in your browser, works offline, and can be installed like a native app.
 
-## 🛠️ Tech Stack
+### Core Features
 
-- **Frontend**: React 18 + TypeScript
-- **Styling**: Tailwind CSS
-- **Backend**: Supabase
-- **Deployment**: DigitalOcean App Platform
+* Progressive Web App with offline mode
+* Streak tracking and activity logs
+* Friends system to connect and compare progress
+* Mood and training tracking
+* Push notifications for reminders and milestones
+* Responsive and minimal interface built with Tailwind CSS
 
-## 🔧 Environment Setup
+## Tech Stack
 
-### 1. Clone Repository
+* **Frontend:** React 18 + TypeScript
+* **Styling:** Tailwind CSS
+* **Backend:** Supabase
+* **Deployment:** DigitalOcean App Platform
+
+## Setup
+
+### 1. Clone the Project
 
 ```bash
 git clone https://github.com/Contus1/TrackApp.git
 cd TrackApp
 ```
 
-### 2. Environment Variables
+### 2. Configure Environment
 
 ```bash
-# Copy environment template
 cp .env.example .env
-
-# Edit .env with your Supabase credentials
-# NEVER commit the real .env file!
 ```
 
-### 3. Supabase Setup
+Edit the `.env` file with your Supabase project URL and anon key.
+Never commit your real `.env` file.
 
-1. Create project at [supabase.com](https://supabase.com)
-2. Get your URL and anon key from Settings → API
-3. Add them to your `.env` file
+### 3. Connect to Supabase
 
-## 🏗️ Development
+1. Create a new project at [supabase.com](https://supabase.com)
+2. Copy your project URL and anon key (under Settings → API)
+3. Add them to the `.env` file
+
+## Development
 
 ```bash
-# Install dependencies
 npm install
-
-# Start development server
 npm start
+```
 
-# Build for production
+### Build for Production
+
+```bash
 npm run build
-
-# Serve production build
 npm run serve
 ```
 
-## 📱 PWA Installation
+## PWA Installation
 
-The app can be installed on any device as a Progressive Web App for a native-like experience.
+You can install TrackApp on any device for a native-like experience with offline support.
 
 ---
 
-**Made with ❤️ by Carl Lichtl**
+**Developed by Carl Lichtl**
+Focused on creating reliable, social, and intuitive digital tools for everyday fitness.
